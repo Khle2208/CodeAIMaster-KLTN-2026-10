@@ -9,3 +9,4 @@ export class Category {
   categoryName: string;
 }
 export const CategorySchema = SchemaFactory.createForClass(Category);
+

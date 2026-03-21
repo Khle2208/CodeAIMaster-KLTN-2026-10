@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,8 +10,16 @@ export class CategoryService {
     @InjectModel(Category.name)
     private readonly categoryModel: Model<CategoryDocument>,
   ) {}
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+    const existing = await this.categoryModel.findOne({
+      title: createCategoryDto.categoryName,
+    });
+
+    if (existing) {
+      throw new BadRequestException('Category đã tồn tại');
+    }
+
+    return this.categoryModel.create(createCategoryDto);
   }
 
   async findAll(): Promise<Category[]> {
