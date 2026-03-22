@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { CourseLevel } from '../enums/courseLevel.enum';
 import { CourseStatus } from '../enums/courseStatus.enum';
-
+import { Types } from 'mongoose';
 export type CourseDocument = Course & Document;
 
 @Schema({ timestamps: true })
@@ -17,7 +17,7 @@ export class Course {
   price: number;
 
   @Prop({
-    default: 'beginner',
+    default: CourseLevel.BEGINNER,
   })
   level: CourseLevel;
 
@@ -25,13 +25,13 @@ export class Course {
   thumbnail: string;
 
   @Prop({
-    default: 'active',
+    default: CourseStatus.ACTIVE,
   })
   status: CourseStatus;
 
-  //   //FK -> Category
-  //   @Prop({ type: Types.ObjectId, ref: 'Category' })
-  //   category: Types.ObjectId;
+  //FK -> Category
+  @Prop({ type: Types.ObjectId, ref: 'Category' })
+  category: Types.ObjectId;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);
