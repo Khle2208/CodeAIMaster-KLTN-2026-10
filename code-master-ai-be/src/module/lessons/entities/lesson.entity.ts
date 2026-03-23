@@ -1,14 +1,24 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-
-export type LessonDocument = HydratedDocument<Lesson>;
+import { Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
+export type LessonDocument = Lesson & Document;
 
 @Schema({ timestamps: true })
 export class Lesson {
-  @Prop({ type: Types.ObjectId, ref: 'Course', required: true }) course_id: Types.ObjectId | undefined;
-  @Prop({ required: true }) title: string | undefined;
-  @Prop() content: string | undefined;
-  @Prop() video_url: string | undefined;
-  @Prop() lesson_order: number | undefined;
+  @Prop({ required: true })
+  title: string;
+
+  @Prop()
+  content: string;
+
+  @Prop()
+  video_url: string;
+
+  @Prop()
+  lesson_order: number;
+
+  @Prop({ type: Types.ObjectId, ref: 'Course', required: true })
+  course_id: Types.ObjectId;
 }
+
 export const LessonSchema = SchemaFactory.createForClass(Lesson);
