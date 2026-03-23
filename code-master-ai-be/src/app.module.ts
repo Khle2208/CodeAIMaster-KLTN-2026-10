@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CoursesModule } from './modules/courses/courses.module';
 import { CategoryModule } from './modules/category/category.module';
+import { AssigmentsModule } from './modules/assigments/assigments.module';
+import { LessonsModule } from './modules/lessons/lessons.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { CategoryModule } from './modules/category/category.module';
     }),
     CoursesModule,
     CategoryModule,
+    AssigmentsModule,
+    LessonsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
