@@ -44,7 +44,7 @@ export class PaymentsController {
     }
 
     const userId = vnp_TxnRef.split('_')[0];
-    await this.paymentsService.markPaymentPaidAndClearCart(userId);
+    await this.paymentsService.markPaymentPaidAndClearCartByOrder(userId);
     return res.redirect(`http://localhost:3000/payment-success/${userId}`);
   }
 

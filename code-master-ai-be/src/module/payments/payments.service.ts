@@ -6,13 +6,18 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { VNPay, ignoreLogger, ProductCode, VnpLocale, dateFormat } from 'vnpay';
+import { ConfigService } from '@nestjs/config';
+import { MailerService } from '@nestjs-modules/mailer';
 
 import { ApiResponse } from '@/common/dto/api-response.dto';
+
 import { Cart, CartDocument } from '../carts/entities/cart.entity';
 import {
   CartDetail,
   CartDetailDocument,
 } from '../cart-details/entities/cart-detail.entity';
+import { User, UserDocument } from '../users/entities/user.entity';
+
 import {
   Payment,
   PaymentDocument,
@@ -21,25 +26,44 @@ import {
 } from './entities/payment.entity';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentStatusDto } from './dto/update-payment.dto';
-import { ConfigService } from '@nestjs/config';
-import { MailerService } from '@nestjs-modules/mailer';
-import { User, UserDocument } from '../users/entities/user.entity';
+
+import {
+  Order,
+  OrderDocument,
+  OrderStatus,
+} from '../orders/entities/order.entity';
+import {
+  OrderDetail,
+  OrderDetailDocument,
+} from '../order-details/entities/order-detail.entity';
+import {
+  Enrollment,
+  EnrollmentDocument,
+} from '../enrollments/entities/enrollment.entity';
 
 @Injectable()
 export class PaymentsService {
   constructor(
     @InjectModel(Payment.name)
     private readonly paymentModel: Model<PaymentDocument>,
+
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+
     @InjectModel(Cart.name)
     private readonly cartModel: Model<CartDocument>,
+    @InjectModel(Enrollment.name)
+    private readonly enrollmentModel: Model<EnrollmentDocument>,
+    @InjectModel(Order.name)
+    private readonly orderModel: Model<OrderDocument>,
+
+    @InjectModel(OrderDetail.name)
+    private readonly orderDetailModel: Model<OrderDetailDocument>,
 
     @InjectModel(CartDetail.name)
     private readonly cartDetailModel: Model<CartDetailDocument>,
 
     private readonly configService: ConfigService,
-
     private readonly mailerService: MailerService,
   ) {}
 
@@ -48,8 +72,10 @@ export class PaymentsService {
       throw new BadRequestException('userId không hợp lệ');
     }
 
+    const userObjectId = new Types.ObjectId(userId);
+
     const cart = await this.cartModel.findOne({
-      user_id: new Types.ObjectId(userId),
+      user_id: userObjectId,
     });
 
     if (!cart) {
@@ -76,11 +102,42 @@ export class PaymentsService {
   ): Promise<ApiResponse<any>> {
     const { payment_method } = createPaymentDto;
 
+    const userObjectId = new Types.ObjectId(userId);
+    const user = await this.userModel.findById(userObjectId).lean();
+
+    if (!user) {
+      throw new NotFoundException('Người dùng không tồn tại');
+    }
+
+    if (!user.phone) {
+      throw new BadRequestException(
+        'Vui lòng cập nhật số điện thoại trước khi thanh toán',
+      );
+    }
+
     const { cart, cartDetails, amount } = await this.getCartWithItems(userId);
+
+    const order = await this.orderModel.create({
+      user_id: userObjectId,
+      total_price: amount,
+      status: OrderStatus.PENDING,
+    });
+
+    const orderDetailsPayload = cartDetails.map((item: any) => ({
+      order_id: order._id,
+      course_id: item.course_id?._id
+        ? new Types.ObjectId(item.course_id._id)
+        : new Types.ObjectId(item.course_id),
+      price: item.price,
+    }));
+
+    const orderDetails =
+      await this.orderDetailModel.insertMany(orderDetailsPayload);
 
     if (payment_method === PaymentMethod.COD) {
       const payment = await this.paymentModel.create({
-        user_id: new Types.ObjectId(userId),
+        user_id: userObjectId,
+        order_id: order._id,
         amount,
         payment_method: PaymentMethod.COD,
         payment_status: PaymentStatus.PENDING,
@@ -89,16 +146,24 @@ export class PaymentsService {
 
       await this.cartDetailModel.deleteMany({ cart_id: cart._id });
 
-      return new ApiResponse('Tạo đơn thanh toán COD thành công', {
+      await this.sendPaymentSuccessEmail(
+        userObjectId.toString(),
+        payment._id.toString(),
+        order._id.toString(),
+      );
+
+      return new ApiResponse('Tạo đơn hàng và thanh toán COD thành công', {
+        order,
+        orderDetails,
         payment,
-        items: cartDetails,
         totalPrice: amount,
       });
     }
 
     if (payment_method === PaymentMethod.VNPAY) {
       const payment = await this.paymentModel.create({
-        user_id: new Types.ObjectId(userId),
+        user_id: userObjectId,
+        order_id: order._id,
         amount,
         payment_method: PaymentMethod.VNPAY,
         payment_status: PaymentStatus.PENDING,
@@ -120,8 +185,8 @@ export class PaymentsService {
       const paymentUrl = vnpay.buildPaymentUrl({
         vnp_Amount: amount,
         vnp_IpAddr: '127.0.0.1',
-        vnp_TxnRef: `${userId}_${Date.now()}`,
-        vnp_OrderInfo: `Thanh toan don hang ${userId}`,
+        vnp_TxnRef: `${order._id}_${Date.now()}`,
+        vnp_OrderInfo: `Thanh toan don hang ${order._id}`,
         vnp_OrderType: ProductCode.Other,
         vnp_ReturnUrl: 'http://localhost:3000/api/v1/payments/vnpay-callback',
         vnp_Locale: VnpLocale.VN,
@@ -129,27 +194,30 @@ export class PaymentsService {
         vnp_ExpireDate: dateFormat(tomorrow),
       });
 
-      return new ApiResponse('Tạo thanh toán VNPAY thành công', {
+      return new ApiResponse('Tạo đơn hàng và thanh toán VNPAY thành công', {
+        order,
+        orderDetails,
         payment,
         payment_url: paymentUrl,
-        items: cartDetails,
         totalPrice: amount,
       });
     }
 
     if (payment_method === PaymentMethod.MOMO) {
       const payment = await this.paymentModel.create({
-        user_id: new Types.ObjectId(userId),
+        user_id: userObjectId,
+        order_id: order._id,
         amount,
         payment_method: PaymentMethod.MOMO,
         payment_status: PaymentStatus.PENDING,
         paid_at: null,
       });
 
-      return new ApiResponse('Tạo thanh toán MOMO thành công', {
+      return new ApiResponse('Tạo đơn hàng và thanh toán MOMO thành công', {
+        order,
+        orderDetails,
         payment,
         payment_url: 'Momo URL sẽ build ở đây',
-        items: cartDetails,
         totalPrice: amount,
       });
     }
@@ -165,6 +233,7 @@ export class PaymentsService {
     const payments = await this.paymentModel
       .find({ user_id: new Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
+      .populate('order_id')
       .lean();
 
     return new ApiResponse('Lấy danh sách thanh toán thành công', payments);
@@ -196,22 +265,27 @@ export class PaymentsService {
       throw new BadRequestException('id không hợp lệ');
     }
 
-    const updateData: any = {
-      payment_status: updatePaymentStatusDto.payment_status,
-    };
-
-    if (updatePaymentStatusDto.payment_status === PaymentStatus.PAID) {
-      updateData.paid_at = new Date();
-    }
-
-    const payment = await this.paymentModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    const payment = await this.paymentModel.findById(id);
 
     if (!payment) {
       throw new NotFoundException('Thanh toán không tồn tại');
     }
+
+    payment.payment_status = updatePaymentStatusDto.payment_status;
+
+    if (updatePaymentStatusDto.payment_status === PaymentStatus.PAID) {
+      payment.paid_at = new Date();
+
+      if (payment.order_id) {
+        await this.orderModel.findByIdAndUpdate(payment.order_id, {
+          status: OrderStatus.PAID,
+        });
+
+        await this.createEnrollmentFromOrder(payment.order_id);
+      }
+    }
+
+    await payment.save();
 
     return new ApiResponse(
       'Cập nhật trạng thái thanh toán thành công',
@@ -219,14 +293,66 @@ export class PaymentsService {
     );
   }
 
-  async markPaymentPaidAndClearCart(userId: string) {
-    if (!Types.ObjectId.isValid(userId)) {
-      throw new BadRequestException('userId không hợp lệ');
+  private async createEnrollmentFromOrder(orderId: string | Types.ObjectId) {
+    const orderObjectId =
+      typeof orderId === 'string' ? new Types.ObjectId(orderId) : orderId;
+
+    const order = await this.orderModel.findById(orderObjectId).lean();
+    if (!order) {
+      throw new NotFoundException('Không tìm thấy đơn hàng để tạo enrollment');
     }
-    const userObjectId = new Types.ObjectId(userId);
+
+    const orderDetails = await this.orderDetailModel
+      .find({ order_id: orderObjectId })
+      .lean();
+
+    if (!orderDetails.length) {
+      throw new BadRequestException('Đơn hàng không có khóa học nào');
+    }
+
+    const enrollmentsToCreate: {
+      user_id: Types.ObjectId;
+      course_id: Types.ObjectId;
+      status: string;
+    }[] = [];
+
+    for (const item of orderDetails) {
+      const existedEnrollment = await this.enrollmentModel.findOne({
+        user_id: order.user_id,
+        course_id: item.course_id,
+      });
+
+      if (!existedEnrollment) {
+        enrollmentsToCreate.push({
+          user_id: order.user_id as Types.ObjectId,
+          course_id: item.course_id as Types.ObjectId,
+          status: 'active',
+        });
+      }
+    }
+
+    if (enrollmentsToCreate.length) {
+      await this.enrollmentModel.insertMany(enrollmentsToCreate);
+    }
+
+    return enrollmentsToCreate;
+  }
+
+  async markPaymentPaidAndClearCartByOrder(orderId: string) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('orderId không hợp lệ');
+    }
+
+    const orderObjectId = new Types.ObjectId(orderId);
+
+    const order = await this.orderModel.findById(orderObjectId);
+    if (!order) {
+      throw new NotFoundException('Không tìm thấy đơn hàng');
+    }
+
     const payment = await this.paymentModel.findOneAndUpdate(
       {
-        user_id: new Types.ObjectId(userId),
+        order_id: orderObjectId,
         payment_method: PaymentMethod.VNPAY,
         payment_status: PaymentStatus.PENDING,
       },
@@ -236,40 +362,67 @@ export class PaymentsService {
       },
       {
         new: true,
-        sort: { createdAt: -1 },
       },
     );
 
     if (!payment) {
       throw new NotFoundException('Không tìm thấy payment pending để cập nhật');
     }
-    const user = await this.userModel.findById(userObjectId).lean();
-    const cart = await this.cartModel.findOne({
-      user_id: new Types.ObjectId(userId),
+
+    await this.orderModel.findByIdAndUpdate(orderObjectId, {
+      status: OrderStatus.PAID,
     });
-    let courseName = '';
-    let phoneNumber = user?.phone || 'Chưa cập nhật';
+    await this.createEnrollmentFromOrder(orderObjectId);
+    const cart = await this.cartModel.findOne({
+      user_id: order.user_id,
+    });
 
     if (cart) {
       await this.cartDetailModel.deleteMany({ cart_id: cart._id });
     }
 
+    await this.sendPaymentSuccessEmail(
+      order.user_id.toString(),
+      payment._id.toString(),
+      order._id.toString(),
+    );
+
+    return { payment, order };
+  }
+
+  private async sendPaymentSuccessEmail(
+    userId: string,
+    invoiceCode: string,
+    orderCode: string,
+  ) {
+    const user = await this.userModel.findById(userId).lean();
+
+    if (!user || !user.email) {
+      throw new BadRequestException('Người dùng không có email');
+    }
+
+    const orderDetails = await this.orderDetailModel
+      .find({ order_id: new Types.ObjectId(orderCode) })
+      .populate('course_id')
+      .lean();
+
+    const courseName = orderDetails
+      .map((item: any) => item.course_id?.title)
+      .filter(Boolean)
+      .join(', ');
+
     await this.mailerService.sendMail({
-      to: user?.email,
+      to: user.email,
       subject: 'Xác nhận thanh toán đơn hàng CodeMaster AI',
       template: 'payment-success',
       context: {
-        name: user?.email,
-        invoiceCode: payment._id.toString(),
-        orderCode: payment._id.toString(),
-        paymentDate: payment.paid_at
-          ? new Date(payment.paid_at).toLocaleString('vi-VN')
-          : new Date().toLocaleString('vi-VN'),
+        name: user.name || user.email,
+        invoiceCode,
+        orderCode,
+        paymentDate: new Date().toLocaleString('vi-VN'),
         courseName: courseName || 'Khóa học tại CodeMaster AI',
-        phoneNumber,
+        phoneNumber: user.phone || 'Chưa cập nhật',
       },
     });
-
-    return payment;
   }
 }

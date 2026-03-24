@@ -11,14 +11,26 @@ import {
   CartDetailSchema,
 } from '../cart-details/entities/cart-detail.entity';
 import { User, UserSchema } from '../users/entities/user.entity';
+import { Order, OrderSchema } from '../orders/entities/order.entity';
+import {
+  OrderDetail,
+  OrderDetailSchema,
+} from '../order-details/entities/order-detail.entity';
+import {
+  Enrollment,
+  EnrollmentSchema,
+} from '../enrollments/entities/enrollment.entity';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Payment.name, schema: PaymentSchema },
       { name: Cart.name, schema: CartSchema },
+      { name: Order.name, schema: OrderSchema },
+      { name: OrderDetail.name, schema: OrderDetailSchema },
       { name: CartDetail.name, schema: CartDetailSchema },
       { name: User.name, schema: UserSchema },
+      { name: Enrollment.name, schema: EnrollmentSchema },
     ]),
   ],
   controllers: [PaymentsController],
