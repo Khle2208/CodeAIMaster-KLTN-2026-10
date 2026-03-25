@@ -10,6 +10,8 @@ import { CourseStatus } from './enums/courseStatus.enum';
 import { NotFoundException } from '@nestjs/common';
 import { Category } from '../categories/entities/category.entity';
 import { CategoryDocument } from '../categories/entities/category.entity';
+import { SearchCourse } from './dto/search-course.dto';
+import { filter } from 'rxjs';
 
 @Injectable()
 export class CoursesService {
@@ -64,5 +66,54 @@ export class CoursesService {
   async remove(id: string): Promise<void> {
     const result = await this.courseModel.findByIdAndDelete(id);
     if (!result) throw new NotFoundException('Course not found ');
+  }
+
+
+  //Tìm kiếm theo khoá học 
+  async searchCourses(search: SearchCourse) {
+    // tìm kiếm
+    const {
+      keyword,
+      level,
+      category,
+      minPrice,
+      maxPrice,
+      page = 1,
+      limit = 10,
+    } = search;
+
+    const filter: any = { status: CourseStatus.ACTIVE };
+
+    if (keyword) filter.title = { $regex: keyword, $options: 'i' };
+
+    if (level) filter.level = level;
+
+    if (category) filter.category = category;
+
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = minPrice;
+      if (maxPrice) filter.price.$lte = maxPrice;
+    }
+
+    // Phân trang (Pagination)
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const data = await this.courseModel
+      .find(filter)
+      .skip(skip)
+      .limit(Number(limit));
+
+    const total = await this.courseModel.countDocuments(filter);
+
+    const sumPage = Math.ceil(total / Number(limit));
+
+    return {
+      data,
+      page: page,
+      limit: limit,
+      total,
+      sumPage,
+    };
   }
 }
