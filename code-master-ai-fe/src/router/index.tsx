@@ -7,6 +7,7 @@ import Course from "../pages/course";
 import Cart from "../pages/cart";
 import Blog from "../pages/blog";
 import CheckoutPage from "../pages/checkout";
+import PurchaseHistoryContent from "../pages/purchase";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -35,6 +36,10 @@ export const router = createBrowserRouter([
       {
         path: "/checkout",
         element: <CheckoutPage />,
+      },
+      {
+        path: "/history-order",
+        element: <PurchaseHistoryContent />,
       },
     ],
   },
