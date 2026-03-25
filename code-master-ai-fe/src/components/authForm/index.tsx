@@ -8,16 +8,23 @@ import {
   UserOutlined,
   SafetyCertificateOutlined,
 } from "@ant-design/icons";
-import { PostRegister } from "../../api/auth";
+import { PostOTP, PostRegister } from "../../api/auth";
 import { PostLogin } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
+import { Modal } from 'antd';
+import { get } from "node:http";
 type AuthFormProps = {
   type?: "login" | "register";
 };
-
+export interface IUser {
+  _id: string;
+  email: string;
+}
 export default function AuthForm({ type = "login" }: AuthFormProps) {
   const [tab, setTab] = useState<"login" | "register">(type);
   const navigate = useNavigate();
+  const [OTP, setOTP] = useState("");
+  const [userData, setUserData] = useState<IUser | null>(null);
   const [formRegisterData, setFormRegisterData] = useState({
     fullname: "",
     email: "",
@@ -28,6 +35,20 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
     email: "",
     password: "",
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = async () => {
+    setIsModalOpen(false);
+    await PostOTP({ _id: userData?._id || "", code: OTP });
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   useEffect(() => {
     setTab(type);
   }, [type]);
@@ -53,6 +74,8 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
     } else {
       try {
         const data = await PostRegister(formRegisterData);
+        setUserData(data);
+        showModal();
         navigate("/login");
       } catch (error) {
         console.error(error);
@@ -68,11 +91,10 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
           <button
             type="button"
             onClick={() => setTab("login")}
-            className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition ${
-              tab === "login"
-                ? "bg-white text-brand-700 shadow-sm"
-                : "text-slate-500"
-            }`}
+            className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition ${tab === "login"
+              ? "bg-white text-brand-700 shadow-sm"
+              : "text-slate-500"
+              }`}
           >
             Đăng nhập
           </button>
@@ -80,11 +102,10 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
           <button
             type="button"
             onClick={() => setTab("register")}
-            className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition ${
-              tab === "register"
-                ? "bg-white text-brand-700 shadow-sm"
-                : "text-slate-500"
-            }`}
+            className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition ${tab === "register"
+              ? "bg-white text-brand-700 shadow-sm"
+              : "text-slate-500"
+              }`}
           >
             Đăng ký
           </button>
@@ -233,6 +254,7 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
         <div className="grid grid-cols-2 gap-2.5">
           <button
             type="button"
+            
             className="flex h-10 items-center justify-center gap-2 rounded-[12px] border border-brand-100 bg-white text-sm font-semibold text-slate-700 transition hover:bg-brand-25"
           >
             <img
@@ -273,6 +295,27 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
         <span className="underline">Điều khoản dịch vụ</span> và{" "}
         <span className="underline">Chính sách bảo mật</span> của chúng tôi.
       </p>
+      <Modal
+        title="Nhập OTP"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Xác nhận"
+        cancelText="Hủy"
+        okButtonProps={{
+          className: "!bg-brand-600 hover:!bg-brand-700 !border-none !rounded-xl",
+        }}
+        cancelButtonProps={{
+          className: "!rounded-xl !border-brand-200 hover:!text-brand-700 hover:!bg-brand-25",
+        }}
+      >
+        <Input
+          placeholder="Nhập mã OTP"
+          value={OTP}
+          onChange={(e) => setOTP(e.target.value)}
+          className="!h-11 !rounded-xl !bg-brand-25 !border-brand-100"
+        />
+      </Modal>
     </div>
   );
 }

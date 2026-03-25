@@ -52,11 +52,23 @@ export const PostLogin = async ({
       password,
     });
     console.log("THANH CONG: ", res.data);
-    showMessage("success", "Đăng nhập thành công!");
     return res.data;
   } catch (err) {
     console.log("THAT BAI: ", err);
-    showMessage("error", "Đăng nhập thất bại!");
+    throw err;
+  }
+};
+
+export const PostOTP = async ({_id , code}: {_id: string; code: string}) => {
+  const Url = "http://localhost:3000/api/v1//auth/check-code";
+  try {
+    const res = await axios.post(Url, { id: _id, code });
+    console.log("THANH CONG: ", res.data);
+    showMessage("success", "Đăng ký thành công!");
+    return res.data;
+  } catch (err) {
+    console.log("THAT BAI: ", err);
+    showMessage("error", "Đăng ký thất bại!");
     throw err;
   }
 };
