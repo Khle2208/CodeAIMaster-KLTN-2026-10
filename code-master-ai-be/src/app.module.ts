@@ -56,7 +56,8 @@ import { StatisticsModule } from './module/statistics/statistics.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
+        // uri: configService.get<string>('MONGODB_URI'),
+        uri: process.env.MONGODB_URI
       }),
       inject: [ConfigService],
     }),
@@ -70,8 +71,10 @@ import { StatisticsModule } from './module/statistics/statistics.module';
           port: 465,
           secure: true,
           auth: {
-            user: configService.get<string>('MAIL_USER'),
-            pass: configService.get<string>('MAIL_PASSWORD'),
+            // user: configService.get<string>('MAIL_USER'),
+            // pass: configService.get<string>('MAIL_PASSWORD'),
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASSWORD,
           },
         },
         defaults: {
