@@ -10,11 +10,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 // import aqp from 'api-query-params'; 
 import * as crypto from 'crypto'; 
+import { Role } from '../roles/entities/role.entity';
 
 @Injectable()
 export class UsersService {
+  // roleModel: any;
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Role.name) private roleModel: Model<Role>,
     private readonly mailerService: MailerService,
   ) {}
 
@@ -103,24 +106,41 @@ export class UsersService {
     const hashPassword = await hashPasswordHelper(password);
     // Thay thế uuidv4() bằng crypto.randomUUID() để sửa lỗi ESM
     const codeId = crypto.randomUUID(); 
+    let defaultRole = await this.roleModel.findOne({ role_name: 'user' });
+    if (!defaultRole) {
+      defaultRole = await this.roleModel.create({
+        role_name: 'user',
+        description: 'Tài khoản người học mặc định',
+      });
+    }
     
     const user = await this.userModel.create({
       name,
       email,
       password: hashPassword,
       isActive: false,
+      role_id: defaultRole?._id,
       codeId: codeId,
       codeExpired: dayjs().add(5, 'minutes'),
     });
 
     this.mailerService.sendMail({
-      to: user.email!, // Thêm ! để tránh lỗi TS
+      to: user.email!, 
       subject: 'Kích hoạt tài khoản CodeMaster AI',
       template: 'register',
       context: { name: user?.name ?? user.email, activationCode: codeId },
     });
 
     return { _id: user._id, email: user.email };
+  }
+  // refresh token
+  async updateRefreshToken(_id: string, refreshToken: string) {
+  return await this.userModel.findByIdAndUpdate(_id, { refreshToken: refreshToken });
+}
+
+  // lay id de kiem tra refresh token
+  async refreshID(id:string){
+    return await this.userModel.findById(id);
   }
 
   async handleActive(data: CodeAuthDto) {

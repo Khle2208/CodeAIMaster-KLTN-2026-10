@@ -36,6 +36,9 @@ export class User {
 
   @Prop({ default: 'active' }) 
   status?: string;
+  
+  @Prop({ type: String, default: null })
+  refreshToken?: string; // Lưu token để đối chiếu
 
   // CÁC TRƯỜNG DÙNG CHO XÁC THỰC
   @Prop({ default: false })

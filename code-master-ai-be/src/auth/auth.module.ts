@@ -8,6 +8,8 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './passport/local.strategy';
 import { JwtStrategy } from './passport/jwt.strategy';
 import { GoogleStrategy } from './passport/google.strategy';
+import { MongooseModule } from '@nestjs/mongoose';
+import { User, UserSchema } from '@/module/users/entities/user.entity';
 
 @Module({
   imports: [
