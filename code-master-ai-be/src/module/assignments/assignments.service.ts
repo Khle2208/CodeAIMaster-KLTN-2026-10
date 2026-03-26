@@ -85,7 +85,7 @@ export class AssignmentsService {
     const total = await this.assigmentModel.countDocuments(filter);
 
     const sumPage = Math.ceil(total / Number(limit));
-    
+
     return {
       data,
       page: page,
