@@ -1,21 +1,94 @@
-import { useMemo, useState } from "react";
-import { purchaseHistoryData } from "../../data/purchase/purchaseHistory";
-import type { OrderStatus } from "../../types/purchase/purchase";
+import { useEffect, useMemo, useState } from "react";
+import { GetHistoryOrder, type OrderItem } from "../../api/order/HistoryOrder";
+import type { OrderStatus, PurchaseItem } from "../../types/purchase/purchase";
 import EmptyState from "../../components/purchase/empty-state/EmptyState";
 import OrderCard from "../../components/purchase/order-card/OrderCard";
 import SearchBox from "../../components/purchase/search-box/SearchBox";
 import StatusFilter from "../../components/purchase/status-fillter/StatusFilter";
 import Footer from "../../components/footer";
+
 type FilterValue = "all" | OrderStatus;
 
 const PurchaseHistoryContent = () => {
   const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [orders, setOrders] = useState<PurchaseItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const mapOrderStatus = (status: string): OrderStatus => {
+    switch (status) {
+      case "pending":
+        return "pending";
+      case "failed":
+      case "cancelled":
+        return "failed";
+      case "paid":
+      case "completed":
+      case "success":
+      default:
+        return "paid";
+    }
+  };
+
+  const formatPrice = (price?: number) => {
+    if (!price) return "0đ";
+    return `${price.toLocaleString("vi-VN")}đ`;
+  };
+
+  const formatDate = (date?: string) => {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("vi-VN");
+  };
+
+  const mapApiOrderToPurchaseItem = (order: OrderItem): PurchaseItem => {
+    return {
+      id: order._id,
+      typeLabel: "Khóa học trực tuyến",
+      title:
+        order.course_name ||
+        order.title ||
+        order.product_name ||
+        "Đơn hàng khóa học",
+      date: formatDate(order.createdAt),
+      paymentMethod:
+        order.payment_method || order.paymentMethod || "Thanh toán online",
+      total: formatPrice(order.total_price),
+      status: mapOrderStatus(order.status),
+      thumbnail:
+        order.thumbnail ||
+        order.image ||
+        "https://via.placeholder.com/300x200?text=Course",
+    };
+  };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      try {
+        const res = await GetHistoryOrder({
+          current: 1,
+          pageSize: 50,
+        });
+
+        const mappedOrders = (res.data.results || []).map(
+          mapApiOrderToPurchaseItem,
+        );
+        setOrders(mappedOrders);
+      } catch (error) {
+        console.error("Lỗi lấy lịch sử đơn hàng:", error);
+        setOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const filteredOrders = useMemo(() => {
     const keyword = searchKeyword.trim().toLowerCase();
 
-    return purchaseHistoryData.filter((item) => {
+    return orders.filter((item) => {
       const matchStatus =
         activeFilter === "all" ? true : item.status === activeFilter;
 
@@ -27,7 +100,7 @@ const PurchaseHistoryContent = () => {
 
       return matchStatus && matchSearch;
     });
-  }, [activeFilter, searchKeyword]);
+  }, [orders, activeFilter, searchKeyword]);
 
   return (
     <>
@@ -47,11 +120,14 @@ const PurchaseHistoryContent = () => {
             activeFilter={activeFilter}
             onChange={setActiveFilter}
           />
-
           <SearchBox value={searchKeyword} onChange={setSearchKeyword} />
         </div>
 
-        {filteredOrders.length > 0 ? (
+        {loading ? (
+          <div className="py-10 text-center text-[#424842]">
+            Đang tải dữ liệu...
+          </div>
+        ) : filteredOrders.length > 0 ? (
           <div className="space-y-5">
             {filteredOrders.map((order) => (
               <OrderCard key={order.id} order={order} />
@@ -61,7 +137,8 @@ const PurchaseHistoryContent = () => {
           <EmptyState />
         )}
       </section>
-      <Footer></Footer>
+
+      <Footer />
     </>
   );
 };

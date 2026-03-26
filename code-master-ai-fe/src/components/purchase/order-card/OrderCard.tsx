@@ -1,5 +1,5 @@
 import type { PurchaseItem } from "../../../types/purchase/purchase";
-
+import { Calendar } from "lucide-react";
 interface OrderCardProps {
   order: PurchaseItem;
 }
@@ -48,7 +48,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
           <div className="flex flex-wrap gap-4 text-sm text-[#424842]">
             <span className="flex items-center gap-1.5">
               <span className="material-symbols-outlined text-base">
-                calendar_today
+                <Calendar />
               </span>
               {order.date}
             </span>
