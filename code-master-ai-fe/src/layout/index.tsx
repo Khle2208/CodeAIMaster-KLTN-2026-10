@@ -7,10 +7,10 @@ const Layout = ()=>{
     return(
         <div>
             <Navbar />
-            <div className="px-12">
+            <div className="">
                 <Outlet />
             </div>
-            {/* <Footer /> */}
+            <Footer />
         </div>
     )
 }
