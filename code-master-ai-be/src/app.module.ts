@@ -78,7 +78,7 @@ import { StatisticsModule } from './module/statistics/statistics.module';
           from: '"CodeMaster AI" <no-reply@codemaster.ai>',
         },
         template: {
-          dir: process.cwd() + '/src/mail/template/',
+          dir: process.cwd() + '/dist/mail/templates',
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
