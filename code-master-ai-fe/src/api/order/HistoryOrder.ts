@@ -1,5 +1,5 @@
 import axios from "axios";
-
+const API_URL = "https://codeaimaster-kltn-2026-10.onrender.com/api/v1";
 export interface OrderItem {
   _id: string;
   user_id: string;
@@ -28,7 +28,7 @@ interface GetHistoryOrderParams {
 }
 
 export const GetHistoryOrder = async (
-  params: GetHistoryOrderParams = {},
+  params: GetHistoryOrderParams = {}
 ): Promise<HistoryOrderResponse> => {
   const token = localStorage.getItem("token");
 
@@ -38,7 +38,7 @@ export const GetHistoryOrder = async (
 
   const { current = 1, pageSize = 10, status } = params;
 
-  const Url = "http://localhost:3000/api/v1/orders/my-orders";
+  const Url = `${API_URL}/orders/my-orders`;
 
   try {
     const res = await axios.get<HistoryOrderResponse>(Url, {
