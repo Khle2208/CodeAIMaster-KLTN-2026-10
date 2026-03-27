@@ -1,8 +1,35 @@
-import {  getCategoryBadgeClass } from "../../data/course";
 import { ICourse } from "../../pages/course";
 import { useNavigate } from "react-router-dom";
+const getCategoryBadgeClass = (categoryName: string) => {
+  switch (categoryName) {
+    case "Frontend":
+      return "bg-brand-200 text-brand-900";
+    case "Backend":
+      return "bg-brand-700 text-white";
+    case "AI & Data":
+      return "bg-brand-400 text-white";
+    case "Mobile":
+      return "bg-brand-300 text-brand-900";
+    case "Cybersecurity":
+      return "bg-brand-600 text-white";
+    default:
+      return "bg-brand-400 text-white";
+  }
+};
+
+const getLevelLabel = (level: string) => {
+  switch (level) {
+    case "beginner":
+      return "Cơ bản";
+    case "intermediate":
+      return "Trung bình";
+    case "advanced":
+      return "Nâng cao";
+    default:
+      return level;
+  }
+};
 const renderStars = (rating: number) => {
- 
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 !== 0;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
@@ -24,9 +51,12 @@ const renderStars = (rating: number) => {
   );
 };
 export const CourseCard = ({ course }: { course: ICourse }) => {
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
-    <article onClick={() => navigate(`/course/${course._id}`)} className="group cursor-pointer flex h-full flex-col overflow-hidden rounded-3xl border border-brand-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+    <article
+      onClick={() => navigate(`/course/${course._id}`)}
+      className="group cursor-pointer flex h-full flex-col overflow-hidden rounded-3xl border border-brand-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+    >
       <div className="relative aspect-[16/10] overflow-hidden">
         <img
           src={course.thumbnail}
@@ -34,12 +64,13 @@ export const CourseCard = ({ course }: { course: ICourse }) => {
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-brand-900/5 transition-all group-hover:bg-transparent" />
-        {/* <span
+        <span
           className={`absolute left-4 top-4 rounded-full px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.18em] shadow-lg 
-            ${getCategoryBadgeClass(course.category)}`}
+             ${getCategoryBadgeClass(course.category.category_name)}
+             `}
         >
-          {course.category}
-        </span> */}
+          {course.category.category_name}
+        </span>
       </div>
 
       <div className="flex flex-1 flex-col p-6">
@@ -71,7 +102,7 @@ export const CourseCard = ({ course }: { course: ICourse }) => {
             )} */}
             <span
               className={`text-lg font-bold ${
-                course.price === 0 ? 'text-brand-600' : 'text-brand-600'
+                course.price === 0 ? "text-brand-600" : "text-brand-600"
               }`}
             >
               {course.price} Đ
@@ -91,7 +122,7 @@ export const CourseCard = ({ course }: { course: ICourse }) => {
               type="button"
               className="rounded-xl bg-brand-700 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-800"
             >
-              {course.price === 0 ? 'Học' : 'Mua'}
+              {course.price === 0 ? "Học" : "Mua"}
             </button>
           </div>
         </div>

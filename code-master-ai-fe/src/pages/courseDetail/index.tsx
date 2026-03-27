@@ -45,9 +45,10 @@ const mapStatusLabel = (status: CourseDetail["status"]) => {
 };
 
 const tabButtonClass = (active: boolean) =>
-  `px-6 py-4 border-b-2 whitespace-nowrap text-sm font-semibold transition ${active
-    ? "border-brand-600 text-brand-700"
-    : "border-transparent text-slate-500 hover:text-brand-600"
+  `px-6 py-4 border-b-2 whitespace-nowrap text-sm font-semibold transition ${
+    active
+      ? "border-brand-600 text-brand-700"
+      : "border-transparent text-slate-500 hover:text-brand-600"
   }`;
 
 export default function CourseDetailPage() {
@@ -55,7 +56,7 @@ export default function CourseDetailPage() {
   const [openSectionIndex, setOpenSectionIndex] = useState<number>(0);
   const { id } = useParams();
   const [courseDetail, setCourseDetail] = useState<CourseDetail | null>(null);
-  
+
   useEffect(() => {
     const fetchCourseDetail = async () => {
       try {
@@ -80,17 +81,26 @@ export default function CourseDetailPage() {
     { label: "Trình độ", value: mapLevelLabel(courseDetail.level) },
     { label: "Trạng thái", value: mapStatusLabel(courseDetail.status) },
     { label: "Cập nhật", value: formatDate(courseDetail.updatedAt) },
-    { label: "Danh mục", value: courseDetail.category.slice(0, 8) + "..." },
+    {
+      label: "Danh mục",
+      value: courseDetail.category.category_name,
+    },
   ];
   return (
     <div className="min-h-screen bg-brand-25 text-slate-900">
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <nav className="mb-8 flex flex-wrap items-center gap-2 text-sm text-slate-500">
-          <a href="#" className="hover:text-brand-600">Trang chủ</a>
+          <a href="#" className="hover:text-brand-600">
+            Trang chủ
+          </a>
           <span>/</span>
-          <a href="#" className="hover:text-brand-600">Khóa học</a>
+          <a href="#" className="hover:text-brand-600">
+            Khóa học
+          </a>
           <span>/</span>
-          <span className="font-medium text-brand-700">{courseDetail.title}</span>
+          <span className="font-medium text-brand-700">
+            {courseDetail.title}
+          </span>
         </nav>
 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
@@ -125,7 +135,9 @@ export default function CourseDetailPage() {
                     key={item.label}
                     className="rounded-2xl border border-brand-100 bg-white p-5 text-center shadow-sm"
                   >
-                    <p className="mb-2 text-xs font-medium text-slate-500">{item.label}</p>
+                    <p className="mb-2 text-xs font-medium text-slate-500">
+                      {item.label}
+                    </p>
                     <p className="font-bold text-brand-800">{item.value}</p>
                   </div>
                 ))}
@@ -161,7 +173,7 @@ export default function CourseDetailPage() {
                       Bạn sẽ học được gì?
                     </h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      {fakeLearnings.map((item) => (
+                      {courseDetail.learning_outcomes?.map((item) => (
                         <div
                           key={item}
                           className="flex gap-3 rounded-2xl bg-white p-4 shadow-sm"
@@ -195,8 +207,12 @@ export default function CourseDetailPage() {
                               className="flex w-full items-center justify-between px-5 py-4 text-left"
                             >
                               <div>
-                                <p className="font-bold text-brand-900">{section.title}</p>
-                                <p className="mt-1 text-sm text-slate-500">{section.meta}</p>
+                                <p className="font-bold text-brand-900">
+                                  {section.title}
+                                </p>
+                                <p className="mt-1 text-sm text-slate-500">
+                                  {section.meta}
+                                </p>
                               </div>
                               <span className="text-xl text-brand-400">
                                 {isOpen ? "−" : "+"}
@@ -214,7 +230,9 @@ export default function CourseDetailPage() {
                                       <span className="text-slate-400">
                                         {lesson.preview ? "▶" : "🔒"}
                                       </span>
-                                      <span className="text-slate-700">{lesson.title}</span>
+                                      <span className="text-slate-700">
+                                        {lesson.title}
+                                      </span>
                                     </div>
                                     <div className="shrink-0">
                                       {lesson.preview ? (
@@ -222,7 +240,9 @@ export default function CourseDetailPage() {
                                           Xem thử
                                         </span>
                                       ) : (
-                                        <span className="text-slate-500">{lesson.duration}</span>
+                                        <span className="text-slate-500">
+                                          {lesson.duration}
+                                        </span>
                                       )}
                                     </div>
                                   </div>
@@ -242,8 +262,11 @@ export default function CourseDetailPage() {
                       Yêu cầu đầu vào
                     </h3>
                     <ul className="space-y-3">
-                      {fakeRequirements.map((item) => (
-                        <li key={item} className="flex items-start gap-3 text-slate-600">
+                      {courseDetail.requirements.map((item) => (
+                        <li
+                          key={item}
+                          className="flex items-start gap-3 text-slate-600"
+                        >
                           <span className="mt-2 h-2 w-2 rounded-full bg-brand-600" />
                           <span>{item}</span>
                         </li>
@@ -258,7 +281,8 @@ export default function CourseDetailPage() {
                       Đánh giá học viên
                     </h3>
                     <p className="text-slate-600">
-                      Chưa có dữ liệu đánh giá thực từ API, nên phần này đang để placeholder.
+                      Chưa có dữ liệu đánh giá thực từ API, nên phần này đang để
+                      placeholder.
                     </p>
                   </section>
                 )}
@@ -295,7 +319,9 @@ export default function CourseDetailPage() {
                 </div>
 
                 <div className="space-y-4 border-t border-brand-100 pt-6 text-sm text-slate-600">
-                  <p className="font-bold text-brand-900">Khóa học này bao gồm:</p>
+                  <p className="font-bold text-brand-900">
+                    Khóa học này bao gồm:
+                  </p>
                   <div className="space-y-3">
                     <div>• Truy cập trọn đời</div>
                     <div>• Học trên mọi thiết bị</div>
@@ -307,7 +333,9 @@ export default function CourseDetailPage() {
             </div>
 
             <div className="rounded-2xl border border-dashed border-brand-300 bg-brand-50 p-6 text-center">
-              <p className="mb-2 text-sm text-slate-600">Bạn cần tư vấn thêm?</p>
+              <p className="mb-2 text-sm text-slate-600">
+                Bạn cần tư vấn thêm?
+              </p>
               <a
                 href="#"
                 className="text-sm font-bold text-brand-700 underline underline-offset-4"
@@ -320,7 +348,9 @@ export default function CourseDetailPage() {
 
         <section className="mt-20 space-y-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-extrabold text-brand-800">Khóa học liên quan</h2>
+            <h2 className="text-3xl font-extrabold text-brand-800">
+              Khóa học liên quan
+            </h2>
             <a href="#" className="font-bold text-brand-600 hover:underline">
               Xem tất cả
             </a>

@@ -41,7 +41,7 @@ export class CoursesService {
   }
 
   async findOne(id: string): Promise<Course> {
-    const course = await this.courseModel.findById(id);
+    const course = await this.courseModel.findById(id).populate("category", "category_name");
     if (!course) {
       throw new UnauthorizedException('Course not exist');
     }
