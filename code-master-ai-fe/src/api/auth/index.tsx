@@ -1,10 +1,7 @@
 import axios from "axios";
 import { showMessage } from "../../utils/showMessages";
-<<<<<<< HEAD
-const API_URL = "https://codeaimaster-kltn-2026-10.onrender.com/api/v1";
-=======
+
 export const API_URL = "https://codeaimaster-kltn-2026-10.onrender.com/api/v1";
->>>>>>> 74647684e8026bfbb105c6f12756baf2826591f0
 interface PostRegisterProps {
   fullname: string;
   email: string;
