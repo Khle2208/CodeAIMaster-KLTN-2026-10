@@ -6,14 +6,41 @@ import { CodeOutlined, SearchOutlined } from "@ant-design/icons";
 import { useUserInfo } from "../../store/user";
 import { UserOutlined } from "@ant-design/icons";
 import { ShoppingCartOutlined } from "@ant-design/icons";
+import { Dropdown, MenuProps } from "antd";
+import { LogoutOutlined , ShoppingOutlined } from "@ant-design/icons";
 const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [navSelected, setNavSelected] = useState(location.pathname);
-    const { userInfo } = useUserInfo();
+    const { userInfo , clearUserInfo } = useUserInfo();
+    
     useEffect(() => {
         setNavSelected(location.pathname);
     }, [location]);
+    const items: MenuProps['items'] = [
+        {
+            key: '1',
+            label: (
+                <div className="font-medium text-brand-600 flex gap-3">{<UserOutlined/>}Thông tin cá nhân</div>
+            ),
+        },
+        {
+            key: '2',
+            label: (
+                <div onClick={() => navigate('/history-order')} className="font-medium text-brand-600 flex gap-3">{<ShoppingOutlined/>}Lịch sử đơn hàng</div>
+            ),
+        },
+        {
+            key: '3',
+            label: (
+                <div onClick={() => {
+                    clearUserInfo();
+                    navigate('/login');
+                }} className="font-medium text-brand-600 flex gap-3">{<LogoutOutlined/>}Đăng xuất</div>
+            ),
+        },
+    ];
+
     return (
         <header className="bg-brand-50 shadow-md sticky top-0 z-50">
             <div className="container mx-auto px-14 py-4 flex items-center justify-between">
@@ -53,9 +80,12 @@ const Navbar = () => {
                     {userInfo ? (
                         <div>
                             <div className="flex items-center space-x-3">
-                                <div className="text-lg w-10 h-10 rounded-full bg-brand-600 font-medium text-white cursor-pointer flex items-center justify-center ">
-                                    {<UserOutlined />}
-                                </div>
+
+                                <Dropdown menu={{ items }} placement="bottomLeft">
+                                    <div className="text-lg w-10 h-10 rounded-full bg-brand-600 font-medium text-white cursor-pointer flex items-center justify-center ">
+                                        {<UserOutlined />}
+                                    </div>
+                                </Dropdown>
                             </div>
                         </div>
                     ) : (

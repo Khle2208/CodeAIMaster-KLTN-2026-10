@@ -33,3 +33,19 @@ export const removeCartItem = async (itemId: string) => {
     throw error;
   }
 };
+export const createCartItem = async (_id: string) => {
+  try {
+    const token = localStorage.getItem("token");
+    console.log("courseId:"+ _id + " token: " + token);
+    const response = await axios.post(`${API_URL}/carts/create`, {  courseId: _id }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi tạo cart:", error);
+    throw error;
+  }
+};

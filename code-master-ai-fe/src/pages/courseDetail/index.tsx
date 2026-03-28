@@ -10,6 +10,7 @@ import {
 } from "../../data/courseDetail";
 import { useParams } from "react-router-dom";
 import { GetCoursesDetail } from "../../api/courseDetail";
+import { createCartItem } from "../../api/cart";
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("vi-VN").format(price) + "đ";
 
@@ -67,9 +68,18 @@ export default function CourseDetailPage() {
         console.error("Lỗi khi lấy chi tiết khóa học: ", err);
       }
     };
-
+    
     fetchCourseDetail();
   }, [id]);
+  const onCart = async ()=>{
+      if(!courseDetail) return;
+      try {
+        await createCartItem(courseDetail._id);
+        console.log("Thêm vào giỏ hàng thành công!");
+      } catch (error) {
+        console.error("Lỗi khi thêm vào giỏ hàng: ", error);
+      }
+    }
   if (!courseDetail) {
     return (
       <div className="min-h-screen bg-brand-25 px-4 py-10">
@@ -310,7 +320,7 @@ export default function CourseDetailPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <button className="w-full rounded-2xl bg-brand-600 px-5 py-4 font-bold text-white transition hover:bg-brand-700">
+                  <button onClick={()=> onCart()} className="w-full rounded-2xl bg-brand-600 px-5 py-4 font-bold text-white transition hover:bg-brand-700">
                     Thêm vào giỏ hàng
                   </button>
                   <button className="w-full rounded-2xl border-2 border-brand-700 px-5 py-4 font-bold text-brand-700 transition hover:bg-brand-700 hover:text-white">
