@@ -189,7 +189,7 @@ export class PaymentsService {
         vnp_TxnRef: `${order._id}_${Date.now()}`,
         vnp_OrderInfo: `Thanh toan don hang ${order._id}`,
         vnp_OrderType: ProductCode.Other,
-        vnp_ReturnUrl: 'http://localhost:3000/api/v1/payments/vnpay-callback',
+        vnp_ReturnUrl: this.configService.get<string>('VNPAY_RETURN_URL')!,
         vnp_Locale: VnpLocale.VN,
         vnp_CreateDate: dateFormat(new Date()),
         vnp_ExpireDate: dateFormat(tomorrow),
