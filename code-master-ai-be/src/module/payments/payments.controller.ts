@@ -53,6 +53,13 @@ export class PaymentsController {
     await this.paymentsService.handleMomoIpn(body);
     return { message: 'IPN processed successfully' };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('by-order/:orderId')
+  getPaymentByOrderId(@Param('orderId', ParseObjectIdPipe) orderId: string) {
+    return this.paymentsService.getPaymentByOrderId(orderId);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   getPaymentById(@Param('id', ParseObjectIdPipe) id: string) {

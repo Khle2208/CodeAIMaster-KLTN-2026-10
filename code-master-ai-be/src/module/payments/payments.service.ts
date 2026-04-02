@@ -499,4 +499,25 @@ export class PaymentsService {
       },
     });
   }
+
+  async getPaymentByOrderId(orderId: string): Promise<ApiResponse<Payment>> {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('orderId không hợp lệ');
+    }
+
+    const payment = await this.paymentModel
+      .findOne({ order_id: new Types.ObjectId(orderId) })
+      .populate('user_id')
+      .populate('order_id')
+      .lean();
+
+    if (!payment) {
+      throw new NotFoundException('Không tìm thấy thanh toán cho đơn hàng này');
+    }
+
+    return new ApiResponse(
+      'Lấy thông tin thanh toán theo đơn hàng thành công',
+      payment,
+    );
+  }
 }

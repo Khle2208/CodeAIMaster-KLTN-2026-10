@@ -12,6 +12,7 @@ import AuthLayout from "../layout/authLayout";
 import AuthForm from "../components/authForm";
 import CourseDetailPage from "../pages/courseDetail";
 import PaymentSuccessContent from "../pages/paymentSuccess";
+import OrderDetailPage from "../pages/orderDetail";
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
       {
         path: "/payment-success/:orderId",
         element: <PaymentSuccessContent />,
+      },
+      {
+        path: "/order-detail/:orderId",
+        element: <OrderDetailPage />,
       },
     ],
   },

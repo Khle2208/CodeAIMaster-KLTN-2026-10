@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Footer from "../../components/footer";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  GetOrderById,
+  GetOrderDetail,
   OrderDetailResponse,
 } from "../../api/order/HistoryOrder";
 const formatCurrency = (value: number) =>
@@ -42,7 +42,7 @@ const PaymentSuccessContent: React.FC = () => {
         setLoading(true);
         setError("");
 
-        const res = await GetOrderById(orderId);
+        const res = await GetOrderDetail(orderId);
         setOrder(res.data);
       } catch (err: any) {
         setError(
