@@ -56,7 +56,6 @@ const renderStars = (rating: number) => {
 export const CourseCard = ({ course }: { course: ICourse }) => {
   const navigate = useNavigate();
   const onCart = async () => {
-    console.log("Thêm vào giỏ hàng:", course._id);
     try {
       await createCartItem(course._id);
       console.log("Thêm vào giỏ hàng thành công!");

@@ -1,3 +1,5 @@
+import { allCourses } from './../../data/home/courses';
+import { showMessage } from "../../utils/showMessages";
 import axios from "axios";
 
 const API_URL = "https://codeaimaster-kltn-2026-10.onrender.com/api/v1";
@@ -42,10 +44,11 @@ export const createCartItem = async (_id: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-
+    showMessage("success", response.data.message);
     return response.data;
-  } catch (error) {
+  } catch (error : any) {
     console.error("Lỗi tạo cart:", error);
+    showMessage("error", error.response.data.message || "Đã xảy ra lỗi khi thêm vào giỏ hàng.");
     throw error;
   }
 };
