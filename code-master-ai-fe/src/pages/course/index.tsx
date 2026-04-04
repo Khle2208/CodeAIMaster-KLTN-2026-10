@@ -1,16 +1,15 @@
-import { categories, courses, getCategoryBadgeClass } from "../../data/course";
-import { use, useEffect } from "react";
 import Footer from "../../components/footer";
+import { GetCategoryNames } from "../../data/course";
+import { useEffect, useState } from "react";
 import { CourseCard } from "../../components/courseCart";
 import {
   CompassOutlined,
   SearchOutlined,
   DownOutlined,
 } from "@ant-design/icons";
-import { Button, Dropdown, MenuProps } from "antd";
-import { useState } from "react";
+import { Dropdown, type MenuProps } from "antd";
 import { GetCourses } from "../../api/course";
-import { get } from "node:http";
+
 export interface ICourse {
   _id: string;
   title: string;
@@ -24,63 +23,50 @@ export interface ICourse {
     category_name: string;
   };
 }
+
 const items: MenuProps["items"] = [
   {
     key: "1",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.antgroup.com"
-      >
-        Phổ biến
-      </a>
-    ),
+    label: <span>Phổ biến</span>,
   },
   {
     key: "2",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.aliyun.com"
-      >
-        Giá tăng dần
-      </a>
-    ),
+    label: <span>Giá tăng dần</span>,
   },
   {
     key: "3",
-    label: (
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://www.luohanacademy.com"
-      >
-        Giá giảm dần
-      </a>
-    ),
+    label: <span>Giá giảm dần</span>,
   },
 ];
+
 export default function CoursesPage() {
-  const [selectedCategory, setSelectedCategory] = useState<number | string>(
-    "Tất cả",
-  );
+  const [selectedCategory, setSelectedCategory] = useState<string>("Tất cả");
   const [coursesData, setCourses] = useState<ICourse[]>([]);
+  const [categories, setCategories] = useState<string[]>(["Tất cả"]);
+
   const filteredCourses =
     selectedCategory === "Tất cả"
       ? coursesData
       : coursesData.filter(
           (course) => course.category.category_name === selectedCategory,
         );
+
   useEffect(() => {
-    const fetchCourses = async () => {
-      const data = await GetCourses();
-      setCourses(data.data);
-      // console.log(data);
+    const fetchData = async () => {
+      try {
+        const [coursesRes, categoryNames] = await Promise.all([
+          GetCourses(),
+          GetCategoryNames(),
+        ]);
+
+        setCourses(coursesRes.data);
+        setCategories(["Tất cả", ...categoryNames]);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+      }
     };
 
-    fetchCourses();
+    fetchData();
   }, []);
 
   return (

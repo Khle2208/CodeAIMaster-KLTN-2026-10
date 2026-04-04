@@ -22,7 +22,7 @@ const OrderItemsList: React.FC<Props> = ({ courses }) => {
           ))
         ) : (
           <div className="p-8 text-center text-[#6b7280]">
-            Không có khóa học nào trong đơn hàng này.
+            Đang tải đơn hàng ...
           </div>
         )}
       </div>

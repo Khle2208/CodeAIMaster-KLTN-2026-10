@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ShieldCheck } from "lucide-react";
 import type { CustomerInfo as CustomerInfoType } from "../../../types/order/order";
 import {
   getPaymentByOrderId,
@@ -60,7 +61,9 @@ const CustomerInfo: React.FC<Props> = ({ orderId }) => {
         </div>
 
         <div>
-          <div className="text-xs text-[#6b7280] font-medium mb-1">Số điện thoại</div>
+          <div className="text-xs text-[#6b7280] font-medium mb-1">
+            Số điện thoại
+          </div>
           <div className="font-semibold text-[#23422a]">
             {payment?.user_id.phone}
           </div>
@@ -78,7 +81,7 @@ const CustomerInfo: React.FC<Props> = ({ orderId }) => {
 
       <div className="pt-4 mt-4 border-t border-[#ddd7ca]">
         <div className="flex items-center gap-2 text-[#23422a] font-semibold text-sm">
-          Giao dịch an toàn
+         <ShieldCheck/> <span>Giao dịch an toàn</span>
         </div>
       </div>
     </div>

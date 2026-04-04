@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Landmark } from "lucide-react";
 import type { PaymentInfo } from "../../../types/order/order";
 import {
   getPaymentByOrderId,
@@ -56,14 +57,20 @@ const PaymentSummary: React.FC<Props> = ({ orderId }) => {
       </div>
 
       <div className="bg-white/10 p-4 rounded-lg flex items-start gap-3">
-        <div className="text-xs">
-          <div className="font-bold mb-0.5">Phương thức thanh toán</div>
-          <div className="opacity-80">{payment?.payment_method}</div>
+        <div className="text-xs flex items-center gap-2">
+          <Landmark size={20} />
+          <div>
+            <div className="font-bold mb-0.5 flex items-center gap-2">
+              <span>Phương thức thanh toán</span>
+            </div>
+            <div className="opacity-80 uppercase font-bold">
+              {payment?.payment_method}
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
-
 };
 
 export default PaymentSummary;
