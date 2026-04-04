@@ -9,7 +9,7 @@ import {
   UserOutlined,
   SafetyCertificateOutlined,
 } from "@ant-design/icons";
-import { PostOTP, PostRegister } from "../../api/auth";
+import { PostOTP, PostRegister, handleGoogleLogin } from "../../api/auth";
 import { PostLogin } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "antd";
@@ -31,8 +31,12 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
   const [errorEmail, setErrorEmail] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
   const [errorConfirmPassword, setErrorConfirmPassword] = useState(false);
-  const [errorEmailTab, setErrorEmailTab] = useState<"login" | "register">("login");
-  const [errorPasswordTab, setErrorPasswordTab] = useState<"login" | "register">("login");
+  const [errorEmailTab, setErrorEmailTab] = useState<"login" | "register">(
+    "login",
+  );
+  const [errorPasswordTab, setErrorPasswordTab] = useState<
+    "login" | "register"
+  >("login");
   const [formRegisterData, setFormRegisterData] = useState({
     fullname: "",
     email: "",
@@ -63,12 +67,11 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
     // console.log("id:"+ userData?._id+"code:"+OTP)
     try {
       await PostOTP({ _id: userData?._id || "", code: OTP });
-      setTab("login")
+      setTab("login");
     } catch (error) {
       console.log(error);
     }
     setOTP("");
-
   };
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -109,21 +112,25 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
 
   const checkform = () => {
     if (tab === "register") {
-      const isFormid = Object.values(formRegisterData).every((value) => value.trim() !== "");
+      const isFormid = Object.values(formRegisterData).every(
+        (value) => value.trim() !== "",
+      );
       return isFormid;
     } else {
-      const isFormid = Object.values(formLoginData).every((value) => value.trim() !== "");
+      const isFormid = Object.values(formLoginData).every(
+        (value) => value.trim() !== "",
+      );
       return isFormid;
     }
-  }
+  };
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const onEmailChange = (value: string) => {
     setErrorEmail(!emailRegex.test(value));
     if (errorEmail && tab === "register") {
-      setErrorEmailTab("register")
+      setErrorEmailTab("register");
     } else if (errorEmail && tab === "login") {
-      setErrorEmailTab("login")
+      setErrorEmailTab("login");
     }
     const setFormData =
       tab === "register" ? setFormRegisterData : setFormLoginData;
@@ -137,9 +144,9 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
   const onPasswordChange = (value: string) => {
     setErrorPassword(value.length < 6);
     if (errorPassword && tab === "register") {
-      setErrorPasswordTab("register")
+      setErrorPasswordTab("register");
     } else if (errorPassword && tab === "login") {
-      setErrorPasswordTab("login")
+      setErrorPasswordTab("login");
     }
     const setFormData =
       tab === "register" ? setFormRegisterData : setFormLoginData;
@@ -157,7 +164,7 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
       setErrorConfirmPassword(false);
       setFormRegisterData({ ...formRegisterData, confirmPassword: value });
     }
-  }
+  };
   const onSubmit = async () => {
     const ischecked = checkform();
     if (!ischecked || errorEmail || errorPassword || errorConfirmPassword) {
@@ -202,10 +209,11 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
           <button
             type="button"
             onClick={() => setTab("login")}
-            className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition ${tab === "login"
-              ? "bg-white text-brand-700 shadow-sm"
-              : "text-slate-500"
-              }`}
+            className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition ${
+              tab === "login"
+                ? "bg-white text-brand-700 shadow-sm"
+                : "text-slate-500"
+            }`}
           >
             Đăng nhập
           </button>
@@ -213,10 +221,11 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
           <button
             type="button"
             onClick={() => setTab("register")}
-            className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition ${tab === "register"
-              ? "bg-white text-brand-700 shadow-sm"
-              : "text-slate-500"
-              }`}
+            className={`flex-1 rounded-full py-2.5 text-sm font-semibold transition ${
+              tab === "register"
+                ? "bg-white text-brand-700 shadow-sm"
+                : "text-slate-500"
+            }`}
           >
             Đăng ký
           </button>
@@ -262,9 +271,11 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
             </label>
             <Input
               size="large"
-              value={tab === "register"
-                ? formRegisterData.email
-                : formLoginData.email}
+              value={
+                tab === "register"
+                  ? formRegisterData.email
+                  : formLoginData.email
+              }
               onChange={(e) => onEmailChange(e.target.value)}
               placeholder="example@gmail.com"
               prefix={<MailOutlined className="text-slate-400" />}
@@ -277,16 +288,17 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
             )}
           </div>
 
-
           <div>
             <label className="mb-1.5 block text-[13px] font-semibold text-slate-800">
               Mật khẩu
             </label>
             <Input.Password
               size="large"
-              value={tab === "register"
-                ? formRegisterData.password
-                : formLoginData.password}
+              value={
+                tab === "register"
+                  ? formRegisterData.password
+                  : formLoginData.password
+              }
               onChange={(e) => onPasswordChange(e.target.value)}
               placeholder="••••••••"
               prefix={<LockOutlined className="text-slate-400" />}
@@ -302,7 +314,6 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
             )}
           </div>
 
-
           {tab === "register" && (
             <div>
               <label className="mb-1.5 block text-[13px] font-semibold text-slate-800">
@@ -311,9 +322,7 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
               <Input.Password
                 size="large"
                 value={formRegisterData.confirmPassword}
-                onChange={(e) =>
-                  onConfirmPasswordChange(e.target.value)
-                }
+                onChange={(e) => onConfirmPasswordChange(e.target.value)}
                 placeholder="••••••••"
                 prefix={
                   <SafetyCertificateOutlined className="text-slate-400" />
@@ -329,7 +338,6 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
                 </p>
               )}
             </div>
-
           )}
         </div>
 
@@ -385,6 +393,7 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
         <div className="grid grid-cols-2 gap-2.5">
           <button
             type="button"
+            onClick={handleGoogleLogin}
             className="flex h-10 items-center justify-center gap-2 rounded-[12px] border border-brand-100 bg-white text-sm font-semibold text-slate-700 transition hover:bg-brand-25"
           >
             <img

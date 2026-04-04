@@ -13,13 +13,13 @@ import AuthForm from "../components/authForm";
 import CourseDetailPage from "../pages/courseDetail";
 import PaymentSuccessContent from "../pages/paymentSuccess";
 import OrderDetailPage from "../pages/orderDetail";
-
 import AdminLayout from "../layout/adminLayout";
 import ArticleManage from "../pages/articleManage";
 import CourseManage from "../pages/courseManage";
 import ExerciseManage from "../pages/exerciseManage";
 import UserManage from "../pages/userManage";
 import CategoryManage from "../pages/categoryManage";
+import GoogleAuthCallback from "../pages/auth/GoogleAuthCallback";
 
 export const router = createBrowserRouter([
   {
@@ -81,6 +81,14 @@ export const router = createBrowserRouter([
     element: (
       <AuthLayout>
         <AuthForm type="login" />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: "/auth/google/callback",
+    element: (
+      <AuthLayout>
+        <GoogleAuthCallback />
       </AuthLayout>
     ),
   },
