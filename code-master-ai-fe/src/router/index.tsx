@@ -11,6 +11,8 @@ import PurchaseHistoryContent from "../pages/purchase";
 import AuthLayout from "../layout/authLayout";
 import AuthForm from "../components/authForm";
 import CourseDetailPage from "../pages/courseDetail";
+import Lesson from "../pages/lesson";
+import Quizz from "../pages/quizz";
 
 export const router = createBrowserRouter([
   {
@@ -49,8 +51,17 @@ export const router = createBrowserRouter([
         path: "/history-order",
         element: <PurchaseHistoryContent />,
       },
+      {
+        path: "/lesson/:id",
+        element: <Lesson />,
+      },
+      {
+        path: "/quiz/:id",
+        element: <Quizz />,
+      },
     ],
   },
+
   {
     path: "/register",
     element: (
