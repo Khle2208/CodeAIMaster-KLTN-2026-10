@@ -247,17 +247,17 @@ export class UsersService {
     return { success: true, message: 'Thay đổi mật khẩu thành công' };
   }
   // login google
-  async createGoogleUser(profile: any) {
-    const user = this.userModel.create({
-      name: profile.name,
-      email: profile.email,
-      avatar: profile.avatar,
-      googleId: profile.googleId,
-      provider: 'google',
-      isActive: true, // Đăng nhập Google thì tự động kích hoạt luôn
-    });
-    return user;
-  }
+  // async createGoogleUser(profile: any) {
+  //   const user = this.userModel.create({
+  //     name: profile.name,
+  //     email: profile.email,
+  //     avatar: profile.avatar,
+  //     googleId: profile.googleId,
+  //     provider: 'google',
+  //     isActive: true, // Đăng nhập Google thì tự động kích hoạt luôn
+  //   });
+  //   return user;
+  // }
 
   async createOAuthUser(profile: any) {
     const existingUser = await this.userModel.findOne({ email: profile.email });
