@@ -23,6 +23,7 @@ import GoogleAuthCallback from "../pages/auth/GoogleAuthCallback";
 import LearnLayout from "../layout/LearnLayout";
 import LessonPage from "../pages/lesson";
 import Quizz from "../pages/quizz";
+import GithubAuthCallback from "../pages/auth/GithubAuthCallback";
 
 export const router = createBrowserRouter([
   {
@@ -106,6 +107,14 @@ export const router = createBrowserRouter([
     element: (
       <AuthLayout>
         <GoogleAuthCallback />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: "/auth/github/callback",
+    element: (
+      <AuthLayout>
+        <GithubAuthCallback />
       </AuthLayout>
     ),
   },

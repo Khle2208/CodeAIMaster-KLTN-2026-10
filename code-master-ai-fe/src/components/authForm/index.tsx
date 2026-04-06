@@ -9,7 +9,7 @@ import {
   UserOutlined,
   SafetyCertificateOutlined,
 } from "@ant-design/icons";
-import { PostOTP, PostRegister, handleGoogleLogin } from "../../api/auth";
+import { PostOTP, PostRegister, handleGithubLogin, handleGoogleLogin } from "../../api/auth";
 import { PostLogin } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "antd";
@@ -178,12 +178,18 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
         try {
           console.log("formLoginData: ", formLoginData);
           const data = await PostLogin(formLoginData);
-          if (data.access_token) {
-            localStorage.setItem("token", data.access_token);
+          if(data && data.user){
             setUserInfo(data.user);
-            localStorage.setItem("user", JSON.stringify(data.user));
+            console.log("data:",data.user);
+            showMessage("success","Dang nhap thanh cong");
+            navigate("/");
           }
-          navigate("/");
+          // if (data.access_token) {
+          //   localStorage.setItem("token", data.access_token);
+          //   setUserInfo(data.user);
+          //   localStorage.setItem("user", JSON.stringify(data.user));
+          // }
+          // navigate("/");
         } catch (error) {
           console.error(error);
         }
@@ -406,6 +412,7 @@ export default function AuthForm({ type = "login" }: AuthFormProps) {
 
           <button
             type="button"
+            onClick={handleGithubLogin}
             className="flex h-10 items-center justify-center gap-2 rounded-[12px] border border-brand-100 bg-white text-sm font-semibold text-slate-700 transition hover:bg-brand-25"
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
