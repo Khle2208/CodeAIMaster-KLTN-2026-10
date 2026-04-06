@@ -20,9 +20,9 @@ import ExerciseManage from "../pages/exerciseManage";
 import UserManage from "../pages/userManage";
 import CategoryManage from "../pages/categoryManage";
 import GoogleAuthCallback from "../pages/auth/GoogleAuthCallback";
-import LearnLayout from "@/layout/LearnLayout";
-import LessonPage from "@/pages/lesson";
-import Quizz from "@/pages/quizz";
+import LearnLayout from "../layout/LearnLayout";
+import LessonPage from "../pages/lesson";
+import Quizz from "../pages/quizz";
 
 export const router = createBrowserRouter([
   {
