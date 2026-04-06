@@ -18,10 +18,15 @@ import { LocalAuthGuard } from './passport/local-auth.guard';
 import { Public, ResponseMessage } from '@/decorator/customize';
 import { GoogleAuthGuard } from './passport/google-auth.guard';
 import { JwtAuthGuard } from './passport/jwt-auth.guard';
+import { GithubAuthGuard } from './passport/github-auth.guard';
+import { UsersService } from '@/module/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  usersService: any;
+  constructor(private readonly authService: AuthService,
+              private readonly userService:UsersService
+  ) {}
 
   @Post('login')
   @Public()
@@ -43,7 +48,7 @@ export class AuthController {
   }
   // dang xuat
   @Post('logout')
-  @UseGuards(JwtAuthGuard) // nguoi dung dang nhap roi moi logout
+  // @UseGuards(JwtAuthGuard) // nguoi dung dang nhap roi moi logout
   logout(@Req() req, @Res() res) {
     return this.authService.logout(req, res);
   }
@@ -79,9 +84,23 @@ export class AuthController {
   async googleAuth(@Request() req) {}
 
   @Get('google/callback')
-  @Public()
+  // @Public()
   @UseGuards(GoogleAuthGuard)
-  async googleAuthRedirect(@Request() req) {
-    return this.authService.validateOAuthLogin(req.user);
+  async googleAuthRedirect(@Request() req, @Res() res) {
+    return this.authService.validateOAuthLogin(req.user,res);
   }
+  //login github
+  @Get('github')
+  @Public()
+  @UseGuards(GithubAuthGuard)
+  async githubAuth(@Request() req) {}
+
+  @Get('github/callback')
+  @Public()
+  @UseGuards(GithubAuthGuard)
+  async githubAuthRedirect(@Req() req, @Res() res) {
+    // const user = await this.userService.createGithubUser(req.user);
+    return this.authService.validateOAuthLogin(req.user,res); 
+  }
+    
 }

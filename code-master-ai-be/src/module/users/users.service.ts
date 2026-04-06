@@ -41,7 +41,6 @@ export class UsersService {
     if(file){
       const uploadResult = await this.uploadService.uploadFile(file);
       imageUrl = uploadResult.secure_url;
-
     }
     // hash password
     const hashPassword = await hashPasswordHelper(password);
@@ -190,6 +189,7 @@ export class UsersService {
     if (!user) throw new BadRequestException("Tài khoản người dùng không tồn tại");
 
     const codeId = await generateVerificationCode(5);
+    console.log("check code id",codeId);
     await user.updateOne({ codeId, codeExpired: dayjs().add(5, 'minutes') });
 
     this.mailerService.sendMail({
@@ -225,16 +225,71 @@ export class UsersService {
 
     return { success: true, message: "Thay đổi mật khẩu thành công" };
   }
-  // login google
-  async createGoogleUser(profile:any){
-    const user = this.userModel.create({
-      name: profile.name,
-      email: profile.email,
-      avatar: profile.avatar,
-      googleId: profile.googleId,
-      provider: 'google',
-      isActive: true, // Đăng nhập Google thì tự động kích hoạt luôn
-    });
-    return user;
+  // // login google
+  // async createGoogleUser(profile:any){
+  //   let user = await this.userModel.findOne({googleId: profile.googleId});
+  //   if(!user){
+  //     const existingUser = await this.userModel.findOne({ email: profile.email });
+  //     if (existingUser) {
+  //       throw new BadRequestException(`Email ${profile.email} đã được đăng ký bằng phương thức khác. Vui lòng sử dụng đúng phương thức để đăng nhập!`);
+  //     }
+  //      user = await this.userModel.create({
+  //     name: profile.name,
+  //     email: profile.email,
+  //     image: profile.avatar,
+  //     googleId: profile.googleId,
+  //     provider: 'google',
+  //     isActive: true, // Đăng nhập Google thì tự động kích hoạt luôn
+  //   });
+  //   }
+  //   return user;
+  // }
+  // //login github
+  // async createGithubUser(profile:any){
+  //   let user = await this.userModel.findOne({githubId:profile.githubId});
+  //   if(!user){
+  //     const existingUser = await this.userModel.findOne({email:profile.email});
+  //     if(existingUser){
+  //       throw new BadRequestException(`Email ${profile.email} đã được đăng ký bằng phương thức khác. Vui lòng sử dụng đúng phương thức để đăng nhập!`);
+  //     }
+  //      user = await this.userModel.create({
+  //     name:profile.name,
+  //     email:profile.email,
+  //     image:profile.image,
+  //     githubId:profile.githubId,
+  //     provider: 'github',
+  //     isActive: true, 
+  //   });
+  //   }
+  //   return user;
+  // }
+  //login bang google+github
+  async createOAuthUser(profile: any) {
+  // Kiểm tra email đã tồn tại bằng provider khác chưa
+  const existingUser = await this.userModel.findOne({ email: profile.email });
+  if (existingUser) {
+    // Nếu đúng provider thì trả về luôn (login lần 2 trở đi)
+    const isSameProvider =
+      (profile.provider === 'google' && existingUser.googleId === profile.googleId) ||
+      (profile.provider === 'github' && existingUser.githubId === profile.githubId);
+
+    if (isSameProvider) return existingUser;
+
+    // Sai provider thì báo lỗi
+    throw new BadRequestException(
+      `Email ${profile.email} đã được đăng ký bằng phương thức khác!`
+    );
   }
+
+  // Tạo user mới
+  return await this.userModel.create({
+    name: profile.name,
+    email: profile.email,
+    image: profile.image,
+    googleId: profile.provider === 'google' ? profile.googleId : undefined,
+    githubId: profile.provider === 'github' ? profile.githubId : undefined,
+    provider: profile.provider,
+    isActive: true,
+  });
+}
 }

@@ -11,10 +11,11 @@ import { CodeAssignment } from '../code-assignments/entities/code-assignment.ent
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { AiAssistantService } from '@/ai-assistant/ai-assistant.service';
+import { JUDGE0_LANGUAGES } from '@/common/constants/languages.constant';
 
 @Injectable()
 export class SubmissionsService {
-  private readonly JUDGE0_URL = 'http://localhost:2358';
+  private readonly JUDGE0_URL = 'https://ce.judge0.com';
 
   constructor(
     @InjectModel(Submission.name) private readonly submissionModel: Model<Submission>,
@@ -24,25 +25,26 @@ export class SubmissionsService {
     private readonly httpService: HttpService,
   ) {}
 
-  async submitCode(
+ async submitCode(
     userId: string,
     assignmentId: string,
     language: string,
     sourceCode: string,
   ) {
     try {
-      //  Kiểm tra bài tập có tồn tại không
-      const assignment = await this.codeAssignmentModel.findById(assignmentId);
-      if (!assignment) {
-        throw new BadRequestException('Không tìm thấy bài tập này.');
+      //  Ép kiểu assignmentId sang ObjectId
+      const objectId = new Types.ObjectId(assignmentId);
+      console.log("-===",objectId);
+
+      // Tìm cấu hình chấm code
+      const codeAssignment = await this.codeAssignmentModel.findOne({ _id: objectId });
+      if (!codeAssignment) {
+        throw new BadRequestException('Không tìm thấy cấu hình chấm code cho bài tập này.');
       }
 
-      //  Ép kiểu assignmentId sang ObjectId để tìm kiếm chính xác
-      const objectId = new Types.ObjectId(assignmentId);
-
-      //  Tìm Test Case - CHÚ Ý: Phải dùng code_assignment_id (giống trong Entity/DB)
+      // Tìm Test Case
       const testCases = await this.testCaseModel
-        .find({ code_assignment_id: objectId }) 
+        .find({ assignment_id: objectId }) 
         .lean()
         .exec();
 
@@ -52,9 +54,10 @@ export class SubmissionsService {
         throw new BadRequestException('Bài tập này chưa có Test Case nào để chấm điểm.');
       }
 
-      //  Map ID ngôn ngữ cho Judge0
-      const languageMap = { python: 71, cpp: 54, java: 62, javascript: 63 };
-      const languageId = languageMap[language.toLowerCase()];
+      //  Map ID ngôn ngữ
+      // const languageMap = { python: 71, cpp: 54, java: 62, javascript: 63 };
+      const normalizedLang = language.toLowerCase().trim();
+      const languageId = JUDGE0_LANGUAGES[normalizedLang];
       if (!languageId) {
         throw new BadRequestException(`Hệ thống chưa hỗ trợ ngôn ngữ: ${language}`);
       }
@@ -63,63 +66,84 @@ export class SubmissionsService {
       let maxTime = 0;
       let maxMemory = 0;
       let finalStatus = 'ACCEPTED';
-      let errorDetail = null;
+      let errorDetail:string | null = null;
 
-      //  Gửi lên Judge0
+      // HÀM DELAY ĐỂ HỖ TRỢ POLLING (Nghỉ một chút trước khi hỏi lại Judge0)
+      const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+      // Gửi lên Judge0 
       const judgePromises = testCases.map(async (testCase: any) => {
         const payload = {
           source_code: Buffer.from(sourceCode).toString('base64'),
           language_id: languageId,
           stdin: testCase.input_data ? Buffer.from(testCase.input_data).toString('base64') : null, 
           expected_output: testCase.expected_output ? Buffer.from(testCase.expected_output).toString('base64') : null,
-          cpu_time_limit: assignment.time_limit || 2.0,
-          memory_limit: assignment.memory_limit || 128000,
+          cpu_time_limit: codeAssignment.time_limit || 2.0,
+          memory_limit: codeAssignment.memory_limit || 128000,
         };
-        const response = await firstValueFrom(
+
+        //  Gửi request lấy Token 
+        const initResponse = await firstValueFrom(
           this.httpService.post(
-            `${this.JUDGE0_URL}/submissions?base64_encoded=true&wait=true`,
+            `${this.JUDGE0_URL}/submissions?base64_encoded=true&wait=false`,
             payload,
             { headers: { 'Content-Type': 'application/json' } },
           ),
         );
-        return response.data;
+        
+        const token = initResponse.data.token;
+        let result: any = null;
+        let statusId = 1; // 1: In Queue, 2: Processing
+
+        //  Polling - Vòng lặp hỏi kết quả liên tục
+        while (statusId === 1 || statusId === 2) {
+          await delay(1000); // Nghỉ 1 giây để Judge0 kịp chayvà chấm bài
+          
+          const checkResponse = await firstValueFrom(
+            this.httpService.get(
+              `${this.JUDGE0_URL}/submissions/${token}?base64_encoded=true`
+            )
+          );
+          
+          result = checkResponse.data;
+          statusId = result.status.id;
+        }
+
+        //  Có kết quả cuối cùng thì trả về
+        return result;
       });
 
       const judgeResults = await Promise.all(judgePromises);
-      // THÊM ĐOẠN NÀY ĐỂ DEBUG: In toàn bộ phản hồi của Judge0 ra Terminal
+      
       console.log("=== KẾT QUẢ TỪ JUDGE0 ===");
       console.log(JSON.stringify(judgeResults, null, 2));
       console.log("=========================");
 
-      // Phân tích kết quả
+      //  Phân tích kết quả
       for (const result of judgeResults) {
         if (result.status.id === 3) {
           passedCases++;
         } else {
           if (result.status.id === 6) {
             finalStatus = 'COMPILATION_ERROR';
-            errorDetail = result.compile_output;
+            errorDetail = result.compile_output 
+              ? Buffer.from(result.compile_output, 'base64').toString('utf-8') 
+              : 'Lỗi biên dịch không xác định';
             break;
-          }
-          if (finalStatus === 'ACCEPTED') {
-            finalStatus = result.status.description.toUpperCase().replace(/ /g, '_');
+          } else {
+            if (finalStatus === 'ACCEPTED') {
+              finalStatus = result.status.description.toUpperCase().replace(/ /g, '_');
+            }
+            if (!errorDetail && result.stderr) {
+              errorDetail = Buffer.from(result.stderr, 'base64').toString('utf-8');
+            }
           }
         }
         if (result.time && parseFloat(result.time) > maxTime) maxTime = parseFloat(result.time);
         if (result.memory && result.memory > maxMemory) maxMemory = result.memory;
       }
-      // code AI
-      // let aiHint = "";
-      // if (finalStatus !== 'ACCEPTED') {
-      //   aiHint = await this.aiAssistantService.explainError(
-      //     language, 
-      //     sourceCode, 
-      //     finalStatus, 
-      //     errorDetail
-      //   );
-      // }
 
-      //  Lưu Submission 
+      // Lưu Submission 
       const newSubmission = await this.submissionModel.create({
         user_id: userId,        
         assignment_id: assignmentId, 

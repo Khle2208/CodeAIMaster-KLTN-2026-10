@@ -3,6 +3,7 @@ import { SubmissionsService } from './submissions.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { JwtAuthGuard } from '@/auth/passport/jwt-auth.guard';
+import { Public } from '@/decorator/customize';
 
 @Controller('submissions')
 export class SubmissionsController {
@@ -26,6 +27,7 @@ export class SubmissionsController {
   }
   //API gia su AI phan tich loi code
   @UseGuards(JwtAuthGuard)
+  //  @Public()
   @Post(':id/ask-ai-tutor')
   async askAiTutor(@Param('id') submissionId: string){
     return await this.submissionsService.requestAiTutor(submissionId);

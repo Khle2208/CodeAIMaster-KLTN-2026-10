@@ -22,6 +22,8 @@ export class User {
 
   @Prop()
   googleId?: string;
+  @Prop()
+  githubId?: string
 
   @Prop({ default: 'local' }) 
   provider?: string;
