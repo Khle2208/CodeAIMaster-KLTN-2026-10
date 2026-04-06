@@ -1,20 +1,5 @@
-import axios from "axios";
-import { API_URL } from "../auth";
-import { showMessage } from "../../utils/showMessages";
+import {axiosInstance} from "../../utils/axios";
 
-
-
-export const GetCourses = async () => {
-  const Url = `${API_URL}/courses`;
-  try {
-    const res = await axios.get(Url);
-    console.log("THANH CONG: ", res.data);
-    return res.data;
-  } catch (err) {
-    console.log("THAT BAI: ", err);
-    throw err;
-  }
-};
 type Category = {
   _id: string;
   category_name: string;
@@ -27,15 +12,36 @@ type CategoryResponse = {
   results: Category[];
   totalPages: number;
 };
-export const GetCategories = async (): Promise<Category[]> => {
-  const url = `${API_URL}/category`;
 
+export const GetCourses = async () => {
   try {
-    const res = await axios.get<CategoryResponse>(url);
+    const res = await axiosInstance.get('/courses');
+    console.log("THANH CONG: ", res.data);
+    return res.data;
+  } catch (err) {
+    console.log("THAT BAI: ", err);
+    throw err;
+  }
+};
+
+export const GetCategories = async (): Promise<Category[]> => {
+  try {
+    const res = await axiosInstance.get<CategoryResponse>('/category');
     console.log("THANH CONG:", res.data);
     return res.data.results;
   } catch (err) {
     console.log("THAT BAI:", err);
+    throw err;
+  }
+};
+
+export const GetCoursesDetail = async (id: string) => {
+  try {
+    const res = await axiosInstance.get(`/courses/${id}`);
+    console.log("THANH CONG: ", res.data);
+    return res.data;
+  } catch (err) {
+    console.log("THAT BAI: ", err);
     throw err;
   }
 };

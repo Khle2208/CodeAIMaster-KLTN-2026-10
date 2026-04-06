@@ -20,6 +20,7 @@ import ExerciseManage from "../pages/exerciseManage";
 import UserManage from "../pages/userManage";
 import CategoryManage from "../pages/categoryManage";
 import GoogleAuthCallback from "../pages/auth/GoogleAuthCallback";
+import GithubAuthCallback from "../pages/auth/GithubAuthCallback";
 
 export const router = createBrowserRouter([
   {
@@ -92,6 +93,14 @@ export const router = createBrowserRouter([
       </AuthLayout>
     ),
   },
+  {
+  path: "/auth/github/callback",
+  element: (
+    <AuthLayout>
+      <GithubAuthCallback />
+    </AuthLayout>
+  ),
+},
   {
     path: "/admin",
     element: <AdminLayout />,

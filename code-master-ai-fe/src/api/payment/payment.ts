@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_URL = "https://codeaimaster-kltn-2026-10.onrender.com/api/v1";
+import {axiosInstance} from "../../utils/axios";
 
 export interface CreatePaymentPayload {
   payment_method: "momo" | "vnpay";
@@ -41,15 +39,7 @@ export interface PaymentByOrderResponse {
 
 export const createPayment = async (payload: CreatePaymentPayload) => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.post(`${API_URL}/payments/create`, payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
+    const response = await axiosInstance.post('/payments/create', payload);
     return response.data;
   } catch (error) {
     console.error("Lỗi tạo thanh toán:", error);
@@ -59,14 +49,7 @@ export const createPayment = async (payload: CreatePaymentPayload) => {
 
 export const getMyPayments = async () => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get(`${API_URL}/payments/my-payments`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const response = await axiosInstance.get('/payments/my-payments');
     return response.data;
   } catch (error) {
     console.error("Lỗi lấy danh sách thanh toán:", error);
@@ -78,23 +61,10 @@ export const getPaymentByOrderId = async (
   orderId: string,
 ): Promise<PaymentByOrderResponse> => {
   try {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      throw new Error("Không tìm thấy token đăng nhập");
-    }
-
-    const response = await axios.get<PaymentByOrderResponse>(
-      `${API_URL}/payments/by-order/${orderId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
+    const response = await axiosInstance.get<PaymentByOrderResponse>(
+      `/payments/by-order/${orderId}`
     );
-
     console.log("LẤY PAYMENT THEO ORDER THÀNH CÔNG:", response.data);
-
     return response.data;
   } catch (error: any) {
     console.error("LỖI LẤY PAYMENT THEO ORDER:", error.response?.data || error);

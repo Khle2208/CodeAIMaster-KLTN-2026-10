@@ -1,6 +1,5 @@
-import axios from "axios";
 import { showMessage } from "../../utils/showMessages";
-
+import {axiosInstance} from "../../utils/axios"; 
 export const API_URL = "https://codeaimaster-kltn-2026-10.onrender.com/api/v1";
 interface PostRegisterProps {
   fullname: string;
@@ -23,22 +22,18 @@ export const PostRegister = async ({
   fullname,
   email,
   password,
-  confirmPassword,
 }: PostRegisterProps) => {
-  const Url = `${API_URL}/auth/register`;
   try {
-    const res = await axios.post(Url, {
+    const res = await axiosInstance.post('/auth/register', {
       name: fullname,
       email,
       password,
     });
     console.log("THANH CONG: ", res.data);
-    // showMessage("success", "Đăng kí thành công!");
     return res.data;
   } catch (err: any) {
     console.log("THAT BAI: ", err);
-    showMessage("error", err.response?.data?.message || "Đăng kí thất bại!");
-    throw err;
+    throw err; // Ném lỗi về cho Form xử lý
   }
 };
 
@@ -46,38 +41,48 @@ export const PostLogin = async ({
   email,
   password,
 }: PostLoginProps): Promise<LoginResponse> => {
-  const Url = `${API_URL}/auth/login`;
   try {
-    const res = await axios.post<LoginResponse>(Url, {
+    const res = await axiosInstance.post<LoginResponse>('/auth/login', {
       username: email,
       password,
     });
     console.log("THANH CONG: ", res.data);
-    showMessage("success", "Đăng nhập thành công!");
-
     return res.data;
   } catch (err: any) {
     console.log("THAT BAI: ", err);
-    showMessage("error", err.response?.data?.message || "Đăng nhập thất bại!");
-    throw err;
+    throw err; 
   }
 };
 
 export const PostOTP = async ({ _id, code }: { _id: string; code: string }) => {
-  console.log("id :" + _id + "code: " + code);
-  const Url = `${API_URL}/auth/check-code`;
   try {
-    const res = await axios.post(Url, { _id, code });
+    const res = await axiosInstance.post('/auth/check-code', { _id, code });
     console.log("THANH CONG: ", res.data);
-    showMessage("success", "Đăng ký thành công!");
+    showMessage("success", "Xác thực thành công!");
     return res.data;
   } catch (err) {
     console.log("THAT BAI: ", err);
-    showMessage("error", "Đăng ký thất bại!");
     throw err;
   }
 };
 
-export const handleGoogleLogin = () => {
+export const handleGoogleLogin = async () => {
   window.location.href = `${API_URL}/auth/google`;
 };
+export const handleGithubLogin =  () => {
+  window.location.href = `${API_URL}/auth/github`;
+};
+export const PostLogout = async ()=>{
+  try {
+    const res = await axiosInstance.post('/auth/logout');
+    console.log("data logout",res.data);
+    return res.data;
+  } catch (error) {
+    console.log("Loi dang xuat",error);
+    return error;
+  }
+}
+// export const GetMe = async ()=>{
+//    const res = await axiosInstance.get('/auth/me');
+//   return res.data;
+// }
