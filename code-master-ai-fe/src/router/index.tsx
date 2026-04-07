@@ -24,6 +24,7 @@ import LearnLayout from "../layout/LearnLayout";
 import LessonPage from "../pages/lesson";
 import Quizz from "../pages/quizz";
 import GithubAuthCallback from "../pages/auth/GithubAuthCallback";
+import RevenueStatisticsPage from "../pages/revenueManage";
 
 export const router = createBrowserRouter([
   {
@@ -122,6 +123,7 @@ export const router = createBrowserRouter([
     path: "/admin",
     element: <AdminLayout />,
     children: [
+      { path: "/admin", element: <RevenueStatisticsPage /> },
       { path: "articles", element: <ArticleManage /> },
       { path: "courses", element: <CourseManage /> },
       { path: "exercises", element: <ExerciseManage /> },
