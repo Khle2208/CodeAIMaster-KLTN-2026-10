@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './module/users/users.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/adapters/handlebars.adapter';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { AssignmentsModule } from './module/assignments/assignments.module';
 import { CartDetailsModule } from './module/cart-details/cart-details.module';
 import { CartsModule } from './module/carts/carts.module';
@@ -27,6 +27,7 @@ import { TestcasesModule } from './module/testcases/testcases.module';
 import { BlogsModule } from './module/blogs/blogs.module';
 import { StatisticsModule } from './module/statistics/statistics.module';
 import { AiAssistantModule } from './ai-assistant/ai-assistant.module';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -52,14 +53,14 @@ import { AiAssistantModule } from './ai-assistant/ai-assistant.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-
+    
     // cau hinh ket noi mongodb
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
       }),
-      inject: [ConfigService],
+      inject: [ConfigService]
     }),
 
     //  Cấu hình Mailer để sửa lỗi UnknownDependenciesException
@@ -67,7 +68,7 @@ import { AiAssistantModule } from './ai-assistant/ai-assistant.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         transport: {
-          host: 'smtp.gmail.com',
+          host: "smtp.gmail.com",
           port: 465,
           secure: true,
           auth: {
@@ -79,8 +80,9 @@ import { AiAssistantModule } from './ai-assistant/ai-assistant.module';
           from: '"CodeMaster AI" <no-reply@codemaster.ai>',
         },
         template: {
-          dir: process.cwd() + '/dist/mail/template',
-          adapter: new HandlebarsAdapter(),
+          // dir: process.cwd() + '/src/mail/template/',
+          dir: join(__dirname, 'mail/template'),
+          adapter: new HandlebarsAdapter(), 
           options: {
             strict: true,
           },
@@ -90,11 +92,10 @@ import { AiAssistantModule } from './ai-assistant/ai-assistant.module';
     }),
 
     AuthModule,
-
     BlogsModule,
 
     StatisticsModule,
-    AiAssistantModule,
+    AiAssistantModule
   ],
   controllers: [AppController],
   providers: [AppService],
