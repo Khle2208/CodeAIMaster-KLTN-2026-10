@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import { AssignmentType } from '../enums/types.enum';
 export type SchemaAssginment = Document & Assignment;
-
+export type AssignmentDocument = HydratedDocument<Assignment>;
 @Schema({ timestamps: true })
 export class Assignment {
   @Prop({ type: Types.ObjectId, ref: 'Lesson', required: true })
@@ -19,11 +19,11 @@ export class Assignment {
 
   @Prop()
   due_date: Date;
-
-  @Prop({
-    default: AssignmentType.QUIZ,
-  })
-  type: AssignmentType;
+  @Prop({ required: true }) type!: string;
+  // @Prop({
+  //   default: AssignmentType.QUIZ,
+  // })
+  // type: AssignmentType;
 }
 
 export const AssignmentSchema = SchemaFactory.createForClass(Assignment);

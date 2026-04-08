@@ -11,6 +11,8 @@ import PurchaseHistoryContent from "../pages/purchase";
 import AuthLayout from "../layout/authLayout";
 import AuthForm from "../components/authForm";
 import CourseDetailPage from "../pages/courseDetail";
+import PaymentSuccessContent from "../pages/paymentSuccess";
+import OrderDetailPage from "../pages/orderDetail";
 import AdminLayout from "../layout/adminLayout";
 import ArticleManage from "../pages/articleManage";
 import CourseManage from "../pages/courseManage";
@@ -18,6 +20,11 @@ import ExerciseManage from "../pages/exerciseManage";
 import UserManage from "../pages/userManage";
 import CategoryManage from "../pages/categoryManage";
 import RevenueStatisticsPage from "../pages/revenueManage";
+import GoogleAuthCallback from "../pages/auth/GoogleAuthCallback";
+import LearnLayout from "../layout/LearnLayout";
+import LessonPage from "../pages/lesson";
+import Quizz from "../pages/quizz";
+import GithubAuthCallback from "../pages/auth/GithubAuthCallback";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +63,28 @@ export const router = createBrowserRouter([
         path: "/history-order",
         element: <PurchaseHistoryContent />,
       },
+      {
+        path: "/payment-success/:orderId",
+        element: <PaymentSuccessContent />,
+      },
+      {
+        path: "/order-detail/:orderId",
+        element: <OrderDetailPage />,
+      },
+    ],
+  },
+  {
+    path: "/learn",
+    element: <LearnLayout />,
+    children: [
+      {
+        path: "lesson/:id",
+        element: <LessonPage />,
+      },
+      {
+        path: "quiz/:id",
+        element: <Quizz />,
+      },
     ],
   },
   {
@@ -71,6 +100,22 @@ export const router = createBrowserRouter([
     element: (
       <AuthLayout>
         <AuthForm type="login" />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: "/auth/google/callback",
+    element: (
+      <AuthLayout>
+        <GoogleAuthCallback />
+      </AuthLayout>
+    ),
+  },
+  {
+    path: "/auth/github/callback",
+    element: (
+      <AuthLayout>
+        <GithubAuthCallback />
       </AuthLayout>
     ),
   },

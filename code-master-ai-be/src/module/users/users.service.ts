@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { User } from './entities/user.entity';
-import { hashPasswordHelper } from '@/helpers/util';
+import { generateVerificationCode, hashPasswordHelper } from '@/helpers/util';
 import {
   CodeAuthDto,
   CreateAuthDto,
@@ -15,13 +15,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 // import aqp from 'api-query-params';
 import * as crypto from 'crypto';
 import { Role } from '../roles/entities/role.entity';
+import { UploadService } from '@/upload/upload.service';
 
 @Injectable()
 export class UsersService {
+  // roleModel: any;
   constructor(
-    @InjectModel(Role.name) private roleModel: Model<Role>,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Role.name) private roleModel: Model<Role>,
     private readonly mailerService: MailerService,
+    private readonly uploadService: UploadService,
   ) {}
 
   isEmailExist = async (email: string) => {
@@ -30,7 +33,7 @@ export class UsersService {
     return false;
   };
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto, file?: Express.Multer.File) {
     const { name, email, password, phone, address, image } = createUserDto;
 
     // check Email
@@ -144,6 +147,17 @@ export class UsersService {
 
     return { _id: user._id, email: user.email };
   }
+  // refresh token
+  async updateRefreshToken(_id: string, refreshToken: string) {
+    return await this.userModel.findByIdAndUpdate(_id, {
+      refreshToken: refreshToken,
+    });
+  }
+
+  // lay id de kiem tra refresh token
+  async refreshID(id: string) {
+    return await this.userModel.findById(id);
+  }
 
   async handleActive(data: CodeAuthDto) {
     const user = await this.userModel.findOne({
@@ -173,7 +187,7 @@ export class UsersService {
     if (user.isActive)
       throw new BadRequestException('Tài khoản này đã được kích hoạt');
 
-    const codeId = crypto.randomUUID();
+    const codeId = await generateVerificationCode(5);
     await user.updateOne({ codeId, codeExpired: dayjs().add(5, 'minutes') });
 
     this.mailerService.sendMail({
@@ -191,7 +205,8 @@ export class UsersService {
     if (!user)
       throw new BadRequestException('Tài khoản người dùng không tồn tại');
 
-    const codeId = crypto.randomUUID();
+    const codeId = await generateVerificationCode(5);
+    console.log('check code id', codeId);
     await user.updateOne({ codeId, codeExpired: dayjs().add(5, 'minutes') });
 
     this.mailerService.sendMail({
@@ -232,15 +247,41 @@ export class UsersService {
     return { success: true, message: 'Thay đổi mật khẩu thành công' };
   }
   // login google
-  async createGoogleUser(profile: any) {
-    const user = this.userModel.create({
+  // async createGoogleUser(profile: any) {
+  //   const user = this.userModel.create({
+  //     name: profile.name,
+  //     email: profile.email,
+  //     avatar: profile.avatar,
+  //     googleId: profile.googleId,
+  //     provider: 'google',
+  //     isActive: true, // Đăng nhập Google thì tự động kích hoạt luôn
+  //   });
+  //   return user;
+  // }
+
+  async createOAuthUser(profile: any) {
+    const existingUser = await this.userModel.findOne({ email: profile.email });
+    if (existingUser) {
+      const isSameProvider =
+        (profile.provider === 'google' &&
+          existingUser.googleId === profile.googleId) ||
+        (profile.provider === 'github' &&
+          existingUser.githubId === profile.githubId);
+
+      if (isSameProvider) return existingUser;
+      throw new BadRequestException(
+        `Email ${profile.email} đã được đăng ký bằng phương thức khác!`,
+      );
+    }
+    // Tạo user mới
+    return await this.userModel.create({
       name: profile.name,
       email: profile.email,
-      avatar: profile.avatar,
-      googleId: profile.googleId,
-      provider: 'google',
-      isActive: true, // Đăng nhập Google thì tự động kích hoạt luôn
+      image: profile.image,
+      googleId: profile.provider === 'google' ? profile.googleId : undefined,
+      githubId: profile.provider === 'github' ? profile.githubId : undefined,
+      provider: profile.provider,
+      isActive: true,
     });
-    return user;
   }
 }

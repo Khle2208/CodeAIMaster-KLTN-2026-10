@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import RevenueChart, { RevenueReport } from "../../components/revenueChart";
-import { GetRevenue } from "../../api/admin/revenue";
-import { InboxOutlined, CalendarOutlined, DollarOutlined, DownOutlined } from "@ant-design/icons";
+import { GetRevenue, GetRevenueExport } from "../../api/admin/revenue";
+import { InboxOutlined, CalendarOutlined, DollarOutlined, DownOutlined, ExportOutlined } from "@ant-design/icons";
 import type { MenuProps } from 'antd';
 import { Button, Dropdown, message, Space } from 'antd';
 
@@ -118,10 +118,20 @@ export default function RevenueStatisticsPage() {
       setLoading(true);
       setError(null);
       const res = await GetRevenue(year.toString());
-
       setReport(res);
     } catch {
       setError("Không thể tải dữ liệu. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchRevenueExport = async () => {
+    try {
+      setLoading(true);
+      const res = await GetRevenueExport(selectedYear.toString());
+      // Handle export logic here, e.g., trigger file download
+    } catch (err) {
+      setError("Không thể xuất file. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -160,16 +170,15 @@ export default function RevenueStatisticsPage() {
   return (
     <div
       className="min-h-screen px-6 py-8 md:px-10"
-
     >
       <div className="mx-auto max-w-6xl space-y-6">
 
         {/* ── BREADCRUMB ── */}
-        <div className="flex items-center gap-2 text-xs" style={{ color: "#7f9f6b" }}>
+        {/* <div className="flex items-center gap-2 text-xs" style={{ color: "#7f9f6b" }}>
           <span>BẢNG ĐIỀU KHIỂN</span>
           <span>/</span>
           <span className="font-bold" style={{ color: "#344e41" }}>DOANH THU</span>
-        </div>
+        </div> */}
 
         {/* ── TITLE ROW ── */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -181,18 +190,19 @@ export default function RevenueStatisticsPage() {
           </h1>
 
           {/* Year Selector */}
-          <div
-            className="flex items-center gap-2 rounded-xl border px-4 py-2 cursor-pointer w-fit hover:border-brand-200 transition-all"
-            style={{
-              backgroundColor: "#f3f2ef",
-              color: "#344e41",
-            }}
-          >
-            <div className="flex items-center gap-1 text-sm font-semibold " style={{ color: "#7f9f6b" }}>
-              {<CalendarOutlined />}
-              <span>KỲ BÁO CÁO</span>
-            </div>
-            {/* <select
+          <div className="flex gap-3">
+            <div
+              className="flex items-center gap-2 rounded-xl border px-4 py-2 cursor-pointer w-fit hover:border-brand-200 transition-all"
+              style={{
+                backgroundColor: "#f3f2ef",
+                color: "#344e41",
+              }}
+            >
+              <div className="flex items-center gap-1 text-sm font-semibold " style={{ color: "#7f9f6b" }}>
+                {<CalendarOutlined />}
+                <span>KỲ BÁO CÁO</span>
+              </div>
+              {/* <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
               className="bg-transparent font-bold text-sm outline-none cursor-pointer"
@@ -204,9 +214,11 @@ export default function RevenueStatisticsPage() {
                 </option>
               ))}
             </select> */}
-            <Dropdown menu={{ items, onClick }} placement="bottomLeft">
-              <p onClick={(e) => e.preventDefault()} className="bg-transparent font-bold text-sm outline-none cursor-pointer">Năm {selectedYear} <DownOutlined /></p>
-            </Dropdown>
+              <Dropdown menu={{ items, onClick }} placement="bottomLeft">
+                <p onClick={(e) => e.preventDefault()} className="bg-transparent font-bold text-sm outline-none cursor-pointer">Năm {selectedYear} <DownOutlined /></p>
+              </Dropdown>
+            </div>
+            <div onClick={fetchRevenueExport} className="flex items-center justify-center gap-2 bg-brand-25 rounded-lg border border-brand-50 hover:border-brand-200 font-bold text-sm px-4 cursor-pointer ">Export file <ExportOutlined /></div>
           </div>
         </div>
 
