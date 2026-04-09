@@ -107,7 +107,7 @@ import { join } from 'path';
           from: '"CodeMaster AI" <no-reply@codemaster.ai>',
         },
         template: {
-          dir: process.cwd() + '/src/mail/template/',
+          dir: process.cwd() + '/dist/mail/template/',
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
