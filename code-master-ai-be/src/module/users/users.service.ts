@@ -142,23 +142,23 @@ export class UsersService {
       codeExpired: dayjs().add(5, 'minutes'),
     });
 
-    // this.mailerService.sendMail({
-    //   to: user.email!,
-    //   subject: 'Kích hoạt tài khoản CodeMaster AI',
-    //   template: 'register',
-    //   context: { name: user?.name ?? user.email, activationCode: codeId },
-    // });
-    try {
-      await this.mailerService.sendMail({
-        to: user.email!,
-        subject: 'Kích hoạt tài khoản CodeMaster AI',
-        template: 'register',
-        context: { name: user?.name ?? user.email, activationCode: codeId },
-      });
-      console.log(`[MAIL] Đã gửi mail OTP thành công đến: ${user.email}`);
-    } catch (error) {
-      console.error(`[MAIL ERROR] Lỗi khi gửi mail đến ${user.email}:`, error);
-    }
+    this.mailerService.sendMail({
+      to: user.email!,
+      subject: 'Kích hoạt tài khoản CodeMaster AI',
+      template: 'register',
+      context: { name: user?.name ?? user.email, activationCode: codeId },
+    });
+    // try {
+    //   await this.mailerService.sendMail({
+    //     to: user.email!,
+    //     subject: 'Kích hoạt tài khoản CodeMaster AI',
+    //     template: 'register',
+    //     context: { name: user?.name ?? user.email, activationCode: codeId },
+    //   });
+    //   console.log(`[MAIL] Đã gửi mail OTP thành công đến: ${user.email}`);
+    // } catch (error) {
+    //   console.error(`[MAIL ERROR] Lỗi khi gửi mail đến ${user.email}:`, error);
+    // }
 
     return { _id: user._id, email: user.email };
   }
