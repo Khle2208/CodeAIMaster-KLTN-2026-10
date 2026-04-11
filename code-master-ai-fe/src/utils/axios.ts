@@ -1,14 +1,14 @@
 import axios from "axios";
 import { useUserInfo } from "../store/user";
 
-// export const axiosInstance = axios.create({
-//   baseURL: "https://codeaimaster-kltn-2026-10.onrender.com/api/v1",
-//   withCredentials: true,
-// });
 export const axiosInstance = axios.create({
-  baseURL: "http://localhost:3001/api/v1",
+  baseURL: "https://codeaimaster-kltn-2026-10.onrender.com/api/v1",
   withCredentials: true,
 });
+// export const axiosInstance = axios.create({
+//   baseURL: "http://localhost:3001/api/v1",
+//   withCredentials: true,
+// });
 
 axiosInstance.interceptors.response.use(
   (response) => {
@@ -22,7 +22,11 @@ axiosInstance.interceptors.response.use(
       originalRequest.url?.includes(url),
     );
     // bat loi het han access token
-    if (error.response?.status === 401 && !originalRequest._retry && !isSkipped) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isSkipped
+    ) {
       originalRequest._retry = true;
       try {
         await axiosInstance.post("/auth/refresh");
@@ -37,4 +41,3 @@ axiosInstance.interceptors.response.use(
   },
 );
 export default axiosInstance;
-
