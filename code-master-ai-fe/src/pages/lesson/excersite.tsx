@@ -3,7 +3,7 @@
 // import { useParams, useNavigate } from "react-router-dom";
 
 // // 🚨 ĐÃ THÊM: Import axiosInstance để tự động lo vụ Cookie
-// import { axiosInstance } from "../../utils/axios"; 
+// import { axiosInstance } from "../../utils/axios";
 
 // // =============================================
 // // TYPES
@@ -94,7 +94,7 @@
 //   const editorRef = useRef<any>(null);
 
 //   // =============================================
-//   // FETCH ĐỀ BÀI 
+//   // FETCH ĐỀ BÀI
 //   // =============================================
 //   useEffect(() => {
 //     if (!assignmentId) return;
@@ -102,10 +102,10 @@
 //     const fetchExercise = async () => {
 //       try {
 //         const res = await axiosInstance.get(`/code-assignments/65e000000000000000000001`);
-        
+
 //         const data: ExerciseData = res.data;
 //         setExercise(data);
-        
+
 //         if (data.default_code?.[language]) {
 //           setCode(data.default_code[language]);
 //         }
@@ -467,8 +467,7 @@
 import { useState, useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import { useParams, useNavigate } from "react-router-dom";
-import { axiosInstance } from "../../utils/axios"; 
-
+import { axiosInstance } from "../../utils/axios";
 
 //Kết hợp cả cũ và thêm AiTutorResult
 interface SubmissionResult {
@@ -504,7 +503,6 @@ interface ExerciseData {
   default_code?: Record<string, string>;
 }
 
-
 // Giữ nguyên từ code cũ
 
 const LANGUAGES = [
@@ -524,55 +522,112 @@ const DEFAULT_CODES: Record<string, string> = {
 };
 
 const DIFFICULTY_STYLE: Record<string, string> = {
-  "Dễ": "bg-emerald-900/60 text-emerald-400 border border-emerald-700/50",
+  Dễ: "bg-emerald-900/60 text-emerald-400 border border-emerald-700/50",
   "Trung bình": "bg-yellow-900/60 text-yellow-400 border border-yellow-700/50",
-  "Khó": "bg-red-900/60 text-red-400 border border-red-700/50",
+  Khó: "bg-red-900/60 text-red-400 border border-red-700/50",
 };
 
 const STATUS_STYLE: Record<string, string> = {
   ACCEPTED: "bg-emerald-900/60 text-emerald-400 border border-emerald-700/50",
-  COMPILATION_ERROR: "bg-yellow-900/60 text-yellow-400 border border-yellow-700/50",
+  COMPILATION_ERROR:
+    "bg-yellow-900/60 text-yellow-400 border border-yellow-700/50",
   WRONG_ANSWER: "bg-red-900/60 text-red-400 border border-red-700/50",
-  TIME_LIMIT_EXCEEDED: "bg-orange-900/60 text-orange-400 border border-orange-700/50",
+  TIME_LIMIT_EXCEEDED:
+    "bg-orange-900/60 text-orange-400 border border-orange-700/50",
   RUNTIME_ERROR: "bg-red-900/60 text-red-400 border border-red-700/50",
 };
 
-
 //  AI TUTOR MODAL (Từ code mới)
 
-function AiTutorModal({ isOpen, onClose, aiHint, isLoading }: { isOpen: boolean; onClose: () => void; aiHint: string | null; isLoading: boolean }) {
+function AiTutorModal({
+  isOpen,
+  onClose,
+  aiHint,
+  isLoading,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  aiHint: string | null;
+  isLoading: boolean;
+}) {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
-      <div className="relative w-full max-w-lg mx-4 bg-[#161b22] border border-gray-700 rounded-xl shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-lg mx-4 bg-[#161b22] border border-gray-700 rounded-xl shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-800">
           <div className="w-8 h-8 rounded-lg bg-violet-900/60 border border-violet-700/50 flex items-center justify-center flex-shrink-0">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-violet-400">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="text-violet-400"
+            >
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
           </div>
           <div>
             <h2 className="text-sm font-semibold text-white">Gia Sư AI</h2>
-            <p className="text-[11px] text-gray-500">Phân tích lỗi và gợi ý cải thiện</p>
+            <p className="text-[11px] text-gray-500">
+              Phân tích lỗi và gợi ý cải thiện
+            </p>
           </div>
-          <button onClick={onClose} className="ml-auto text-gray-600 hover:text-gray-300 transition-colors p-1 rounded">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <button
+            onClick={onClose}
+            className="ml-auto text-gray-600 hover:text-gray-300 transition-colors p-1 rounded"
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
           </button>
         </div>
         <div className="p-5 max-h-[60vh] overflow-y-auto whitespace-pre-wrap text-xs text-gray-300 leading-relaxed">
           {isLoading ? (
             <div className="space-y-3">
-               <div className="flex items-center gap-2 mb-4">
-                 <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
-                 <span className="text-xs text-violet-400">Gia sư AI đang phân tích code của bạn...</span>
-               </div>
-               {[100, 85, 92, 70].map((w, i) => <div key={i} className="h-2.5 bg-gray-800 rounded animate-pulse" style={{ width: `${w}%` }} />)}
+              <div className="flex items-center gap-2 mb-4">
+                <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
+                <span className="text-xs text-violet-400">
+                  Gia sư AI đang phân tích code của bạn...
+                </span>
+              </div>
+              {[100, 85, 92, 70].map((w, i) => (
+                <div
+                  key={i}
+                  className="h-2.5 bg-gray-800 rounded animate-pulse"
+                  style={{ width: `${w}%` }}
+                />
+              ))}
             </div>
-          ) : aiHint ? aiHint : <p className="text-gray-500">Không có gợi ý.</p>}
+          ) : aiHint ? (
+            aiHint
+          ) : (
+            <p className="text-gray-500">Không có gợi ý.</p>
+          )}
         </div>
         {!isLoading && (
           <div className="px-5 py-3 border-t border-gray-800 flex justify-end">
-            <button onClick={onClose} className="text-xs px-4 py-1.5 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700">Đóng</button>
+            <button
+              onClick={onClose}
+              className="text-xs px-4 py-1.5 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700"
+            >
+              Đóng
+            </button>
           </div>
         )}
       </div>
@@ -590,7 +645,9 @@ export default function ExercisePage() {
   const [code, setCode] = useState(DEFAULT_CODES.javascript);
   const [activeTab, setActiveTab] = useState<"console" | "result">("console");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [consoleOutput, setConsoleOutput] = useState('Nhấn "Nộp bài" để chạy và chấm bài...');
+  const [consoleOutput, setConsoleOutput] = useState(
+    'Nhấn "Nộp bài" để chạy và chấm bài...',
+  );
   const [result, setResult] = useState<SubmissionResult | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const editorRef = useRef<any>(null);
@@ -604,7 +661,9 @@ export default function ExercisePage() {
     const fetchExercise = async () => {
       try {
         // Code cũ của bạn đang fix cứng ID hoặc dùng assignmentId, mình giữ logic axiosInstance
-        const res = await axiosInstance.get(`/code-assignments/65e000000000000000000001`);
+        const res = await axiosInstance.get(
+          `/code-assignments/65e000000000000000000001`,
+        );
         const data: ExerciseData = res.data;
         setExercise(data);
         if (data.default_code?.[language]) setCode(data.default_code[language]);
@@ -615,7 +674,7 @@ export default function ExercisePage() {
       }
     };
     fetchExercise();
-  }, [assignmentId]);
+  }, [assignmentId, language]);
 
   const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor;
@@ -647,7 +706,7 @@ export default function ExercisePage() {
 
     try {
       const testAssignmentId = "65e000000000000000000001";
-      const res = await axiosInstance.post('/submissions/submit', {
+      const res = await axiosInstance.post("/submissions/submit", {
         assignmentId: testAssignmentId,
         language,
         sourceCode,
@@ -657,26 +716,31 @@ export default function ExercisePage() {
       const ts2 = new Date().toLocaleTimeString();
 
       if (data.compileError) {
-        setConsoleOutput(`[${ts2}] Biên dịch thất bại.\n\nLỗi biên dịch:\n${data.compileError}`);
+        setConsoleOutput(
+          `[${ts2}] Biên dịch thất bại.\n\nLỗi biên dịch:\n${data.compileError}`,
+        );
       } else {
-        setConsoleOutput(`[${ts2}] Biên dịch thành công.\n✓ Passed ${data.passedCases}/${data.totalCases} test cases.`);
+        setConsoleOutput(
+          `[${ts2}] Biên dịch thành công.\n✓ Passed ${data.passedCases}/${data.totalCases} test cases.`,
+        );
       }
 
       setResult(data);
       setActiveTab("result");
-      
+
       // Nếu server trả về hint sẵn trong result thì lưu lại
       if (data.submission?.ai_hint) setAiHint(data.submission.ai_hint);
       if (data.submission?.status === "ACCEPTED") setIsSuccess(true);
-
     } catch (err: any) {
-      setConsoleOutput(`Lỗi từ server: ${err.response?.data?.message || err.message}`);
+      setConsoleOutput(
+        `Lỗi từ server: ${err.response?.data?.message || err.message}`,
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Handler hỏi AI 
+  // Handler hỏi AI
   const handleAskAiTutor = async () => {
     if (!result?.submission?._id) return;
     setIsAiModalOpen(true);
@@ -684,7 +748,9 @@ export default function ExercisePage() {
 
     setIsAiLoading(true);
     try {
-      const res = await axiosInstance.post(`/submissions/${result.submission._id}/ask-ai-tutor`);
+      const res = await axiosInstance.post(
+        `/submissions/${result.submission._id}/ask-ai-tutor`,
+      );
       const data: AiTutorResult = res.data;
       setAiHint(data.ai_hint);
     } catch (err: any) {
@@ -694,21 +760,34 @@ export default function ExercisePage() {
     }
   };
 
-  const pct = result && result.totalCases > 0 ? Math.round((result.passedCases / result.totalCases) * 100) : 0;
-  const showAiTutorBtn = result !== null && result.submission?.status !== "ACCEPTED";
+  const pct =
+    result && result.totalCases > 0
+      ? Math.round((result.passedCases / result.totalCases) * 100)
+      : 0;
+  const showAiTutorBtn =
+    result !== null && result.submission?.status !== "ACCEPTED";
 
   return (
     <>
-      <AiTutorModal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} aiHint={aiHint} isLoading={isAiLoading} />
+      <AiTutorModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        aiHint={aiHint}
+        isLoading={isAiLoading}
+      />
 
       <div className="flex h-screen bg-[#0d1117] text-sm overflow-hidden select-none">
         {/* LEFT PANEL (Giữ nguyên code cũ) */}
         <div className="w-[38%] min-w-[300px] border-r border-gray-800 flex flex-col overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-800 bg-[#161b22] flex items-start gap-2 flex-shrink-0">
             <div className="flex-1 min-w-0">
-              <h1 className="text-sm font-semibold text-white leading-snug">{exercise?.title ?? "Xây dựng Component Greeting"}</h1>
+              <h1 className="text-sm font-semibold text-white leading-snug">
+                {exercise?.title ?? "Xây dựng Component Greeting"}
+              </h1>
               <div className="flex items-center gap-2 mt-1.5">
-                <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${DIFFICULTY_STYLE[exercise?.difficulty || "Dễ"]}`}>
+                <span
+                  className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${DIFFICULTY_STYLE[exercise?.difficulty || "Dễ"]}`}
+                >
                   {exercise?.difficulty || "Dễ"}
                 </span>
               </div>
@@ -717,7 +796,13 @@ export default function ExercisePage() {
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0d1117]">
             {loadingExercise ? (
               <div className="space-y-2">
-                {[80, 60, 90, 50].map((w, i) => <div key={i} className="h-3 bg-gray-800 rounded animate-pulse" style={{ width: `${w}%` }} />)}
+                {[80, 60, 90, 50].map((w, i) => (
+                  <div
+                    key={i}
+                    className="h-3 bg-gray-800 rounded animate-pulse"
+                    style={{ width: `${w}%` }}
+                  />
+                ))}
               </div>
             ) : (
               <div className="text-gray-400 text-xs leading-relaxed">
@@ -730,12 +815,29 @@ export default function ExercisePage() {
         {/* RIGHT PANEL (Editor + Output) */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-800 bg-[#161b22]">
-            <select value={language} onChange={(e) => setLanguage(e.target.value)} className="text-xs px-2.5 py-1.5 rounded-md border border-gray-700 bg-[#0d1117] text-gray-300">
-              {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="text-xs px-2.5 py-1.5 rounded-md border border-gray-700 bg-[#0d1117] text-gray-300"
+            >
+              {LANGUAGES.map((l) => (
+                <option key={l.value} value={l.value}>
+                  {l.label}
+                </option>
+              ))}
             </select>
             <div className="flex-1" />
-            <button onClick={handleReset} className="text-xs px-3 py-1.5 text-gray-400 hover:text-gray-200">Đặt lại</button>
-            <button onClick={handleSubmit} disabled={isSubmitting} className="text-xs px-4 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold disabled:opacity-50">
+            <button
+              onClick={handleReset}
+              className="text-xs px-3 py-1.5 text-gray-400 hover:text-gray-200"
+            >
+              Đặt lại
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="text-xs px-4 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold disabled:opacity-50"
+            >
               {isSubmitting ? "Đang chấm..." : "Nộp bài"}
             </button>
           </div>
@@ -743,29 +845,51 @@ export default function ExercisePage() {
           <div className="flex-1 min-h-0">
             <Editor
               height="100%"
-              language={LANGUAGES.find((l) => l.value === language)?.monaco ?? "javascript"}
+              language={
+                LANGUAGES.find((l) => l.value === language)?.monaco ??
+                "javascript"
+              }
               value={code}
               onChange={(val) => setCode(val || "")}
               onMount={handleEditorDidMount}
               theme="vs-dark"
-              options={{ fontSize: 13, minimap: { enabled: false }, automaticLayout: true, tabSize: 2 }}
+              options={{
+                fontSize: 13,
+                minimap: { enabled: false },
+                automaticLayout: true,
+                tabSize: 2,
+              }}
             />
           </div>
 
           <div className="h-52 border-t border-gray-800 flex flex-col bg-[#0d1117]">
             <div className="flex bg-[#161b22] border-b border-gray-800 items-center">
               {(["console", "result"] as const).map((tab) => (
-                <button key={tab} onClick={() => setActiveTab(tab)} className={`text-xs px-4 py-2.5 border-b-2 transition-colors ${activeTab === tab ? "border-emerald-500 text-white" : "border-transparent text-gray-500"}`}>
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`text-xs px-4 py-2.5 border-b-2 transition-colors ${activeTab === tab ? "border-emerald-500 text-white" : "border-transparent text-gray-500"}`}
+                >
                   {tab === "console" ? "Console output" : "Kết quả"}
                 </button>
               ))}
-              
+
               <div className="flex-1" />
 
               {/* Nút Hỏi Gia Sư AI */}
               {showAiTutorBtn && (
-                <button onClick={handleAskAiTutor} className="flex items-center gap-1.5 text-xs px-3 py-1.5 mr-2 rounded-md bg-violet-900/40 hover:bg-violet-800/60 border border-violet-700/50 text-violet-300 transition-all">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <button
+                  onClick={handleAskAiTutor}
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 mr-2 rounded-md bg-violet-900/40 hover:bg-violet-800/60 border border-violet-700/50 text-violet-300 transition-all"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
                   Hỏi Gia Sư AI
                 </button>
               )}
@@ -773,21 +897,42 @@ export default function ExercisePage() {
 
             <div className="flex-1 overflow-y-auto p-3 font-mono text-xs">
               {activeTab === "console" ? (
-                <div className={consoleOutput.includes("Lỗi") ? "text-red-400" : "text-emerald-400 whitespace-pre-wrap"}>{consoleOutput}</div>
+                <div
+                  className={
+                    consoleOutput.includes("Lỗi")
+                      ? "text-red-400"
+                      : "text-emerald-400 whitespace-pre-wrap"
+                  }
+                >
+                  {consoleOutput}
+                </div>
               ) : (
                 <div className="space-y-3">
                   {result ? (
                     <>
                       <div className="flex justify-between items-center">
-                        <span className={`px-2 py-0.5 rounded-full ${STATUS_STYLE[result.submission.status]}`}>{result.submission.status}</span>
-                        <span className="text-white font-bold">{result.submission.score}/10</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full ${STATUS_STYLE[result.submission.status]}`}
+                        >
+                          {result.submission.status}
+                        </span>
+                        <span className="text-white font-bold">
+                          {result.submission.score}/10
+                        </span>
                       </div>
                       <div className="h-1.5 rounded-full bg-gray-800 overflow-hidden">
-                        <div className="h-full bg-emerald-500" style={{ width: `${pct}%` }} />
+                        <div
+                          className="h-full bg-emerald-500"
+                          style={{ width: `${pct}%` }}
+                        />
                       </div>
-                      <div className="text-gray-400">Passed {result.passedCases}/{result.totalCases} cases</div>
+                      <div className="text-gray-400">
+                        Passed {result.passedCases}/{result.totalCases} cases
+                      </div>
                     </>
-                  ) : <span className="text-gray-600">Chưa có kết quả.</span>}
+                  ) : (
+                    <span className="text-gray-600">Chưa có kết quả.</span>
+                  )}
                 </div>
               )}
             </div>
@@ -795,8 +940,15 @@ export default function ExercisePage() {
 
           {isSuccess && (
             <div className="flex items-center gap-3 px-4 py-2.5 border-t border-emerald-900/50 bg-emerald-900/20">
-              <span className="text-xs text-emerald-400 flex-1">✓ Bạn đã hoàn thành bài tập này.</span>
-              <button onClick={() => navigate(-1)} className="text-xs px-4 py-1.5 rounded-md bg-emerald-700 text-white font-semibold">Bài tập tiếp theo →</button>
+              <span className="text-xs text-emerald-400 flex-1">
+                ✓ Bạn đã hoàn thành bài tập này.
+              </span>
+              <button
+                onClick={() => navigate(-1)}
+                className="text-xs px-4 py-1.5 rounded-md bg-emerald-700 text-white font-semibold"
+              >
+                Bài tập tiếp theo →
+              </button>
             </div>
           )}
         </div>
