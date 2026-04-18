@@ -5,5 +5,5 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   category_name;
 
-  description: string;
+  description?: string;
 }
