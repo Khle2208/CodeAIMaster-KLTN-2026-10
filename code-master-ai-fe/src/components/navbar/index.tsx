@@ -88,13 +88,16 @@ const Navbar = () => {
       }
     };
     getCountCart();
-  }, [setQuantityCart]);
+  }, []);
 
   const items: MenuProps["items"] = [
     {
       key: "1",
       label: (
-        <div className="font-medium text-brand-600 flex gap-3">
+        <div
+          onClick={() => navigate("/profile")}
+          className="font-medium text-brand-600 flex gap-3"
+        >
           {<UserOutlined />}Thông tin cá nhân
         </div>
       ),

@@ -29,6 +29,10 @@ import ExercisePage from "../pages/lesson/excersite";
 import RoleManage from "../pages/admin/roleManage";
 import PermissionManage from "../pages/admin/permissionManage";
 import ProfilePage from "../pages/ProfilePage";
+import UserProfile from "../pages/profile";
+import ChangePassword from "../pages/profile/ChangePassword";
+import MyCourses from "../pages/profile/MyCourses";
+import PersonalInfo from "../pages/profile/PersonalInfo";
 
 export const router = createBrowserRouter([
   {
@@ -75,6 +79,24 @@ export const router = createBrowserRouter([
         path: "/order-detail/:orderId",
         element: <OrderDetailPage />,
       },
+      {
+        path: "/profile",
+        element: <UserProfile />, // chứa ProfileLayout + Outlet
+        children: [
+          {
+            index: true,
+            element: <PersonalInfo />, // /profile
+          },
+          {
+            path: "password",
+            element: <ChangePassword />, // /profile/password
+          },
+          {
+            path: "courses",
+            element: <MyCourses />, // /profile/courses
+          },
+        ],
+      },
     ],
   },
   {
@@ -90,9 +112,9 @@ export const router = createBrowserRouter([
         element: <Quizz />,
       },
       {
-      path: "exercise",
-      element: <ExercisePage />,
-    }
+        path: "exercise",
+        element: <ExercisePage />,
+      },
     ],
   },
   {
@@ -137,12 +159,12 @@ export const router = createBrowserRouter([
       { path: "exercises", element: <ExerciseManage /> },
       { path: "users", element: <UserManage /> },
       { path: "categories", element: <CategoryManage /> },
-      { path: 'roles', element: <RoleManage /> },
-      {path: 'permissions',element: <PermissionManage /> },
+      { path: "roles", element: <RoleManage /> },
+      { path: "permissions", element: <PermissionManage /> },
       {
-            path: "profile",
-            element: <ProfilePage /> // Component Profile ta vừa làm ở bước trước
-        }
+        path: "profile",
+        element: <ProfilePage />, // Component Profile ta vừa làm ở bước trước
+      },
     ],
   },
 ]);
