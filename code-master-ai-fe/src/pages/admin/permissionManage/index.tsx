@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Button, Checkbox, Select, message, Spin } from "antd";
 import { useUserInfo } from "../../../store/user";
 import PermissionControl from "../../../components/permissionControl";
-import { GetRoles, UpdateRolePermissions } from "../../../api/admin/role"; // Giả sử bạn đã tạo file API này ở Bước 4 trước đó
+import { GetRolesList, UpdateRolePermissions } from "../../../api/admin/role"; // Giả sử bạn đã tạo file API này ở Bước 4 trước đó
 
 const { Option } = Select;
 
@@ -46,8 +46,9 @@ const RoleManage: React.FC = () => {
     const fetchRoles = async () => {
         setLoading(true);
         try {
-            const data = await GetRoles();
+            const data = await GetRolesList();
             setRoles(data);
+            console.log("Danh sách Role:", data);
             if (data && data.length > 0) {
                 // Mặc định chọn Role đầu tiên
                 setSelectedRoleId(data[0]._id);

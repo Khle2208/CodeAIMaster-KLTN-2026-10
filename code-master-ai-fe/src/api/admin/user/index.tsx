@@ -1,7 +1,7 @@
 import axiosInstance from "../../../utils/axios"; 
 
-export const GetUsers = async () => {
-    const response = await axiosInstance.get('/users');
+export const GetUsers = async (params?: { current?: number; pageSize?: number; search?: string }) => {
+    const response = await axiosInstance.get('/users',{params});
     console.log("GetUsers response:", response.data); 
     return response.data;
 };

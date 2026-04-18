@@ -1,7 +1,12 @@
 import axiosInstance from '../../../utils/axios'; 
 
-export const GetRoles = async () => {
-  const response = await axiosInstance.get('/admin/roles');
+export const GetRoles = async (params?: { current?: number; pageSize?: number; search?: string }) => {
+  const response = await axiosInstance.get('/admin/roles', { params });
+  return response.data;
+};
+export const GetRolesList = async () => {
+  const response = await axiosInstance.get('/admin/roles/list');
+  console.log("API GetRolesList response:", response);
   return response.data;
 };
 
