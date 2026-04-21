@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useUserInfo } from "../../../store/user";
+// import { useUserInfo } from "../../../store/user";
 import PermissionControl from "../../../components/permissionControl";
 import { GetRoles, CreateRole, UpdateRole, DeleteRole } from "../../../api/admin/role";
 
@@ -53,7 +53,7 @@ const RoleManage: React.FC = () => {
     // Tự động gọi API khi chuyển trang hoặc đổi từ khóa tìm kiếm
     useEffect(() => { 
         fetchRoles(); 
-    }, [currentPage, activeSearch]);
+    }, [currentPage, activeSearch, fetchRoles]);
 
     // Xử lý Debounce tìm kiếm (chờ 0.5s sau khi gõ xong)
     useEffect(() => {

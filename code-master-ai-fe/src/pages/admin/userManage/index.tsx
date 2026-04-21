@@ -40,7 +40,7 @@ const UserManage: React.FC = () => {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     //  THÊM / SỬA / XÓA
     const handleOpenCreate = () => {

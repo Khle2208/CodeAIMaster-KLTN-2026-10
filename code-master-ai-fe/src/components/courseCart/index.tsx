@@ -3,22 +3,22 @@ import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { createCartItem, GetCartLength } from "../../api/cart";
 import { useUserCart } from "../../store/cart";
-const getCategoryBadgeClass = (categoryName: string) => {
-  switch (categoryName) {
-    case "Frontend":
-      return "bg-brand-200 text-brand-900";
-    case "Backend":
-      return "bg-brand-700 text-white";
-    case "AI & Data":
-      return "bg-brand-400 text-white";
-    case "Mobile":
-      return "bg-brand-300 text-brand-900";
-    case "Cybersecurity":
-      return "bg-brand-600 text-white";
-    default:
-      return "bg-brand-400 text-white";
-  }
-};
+// const getCategoryBadgeClass = (categoryName: string) => {
+//   switch (categoryName) {
+//     case "Frontend":
+//       return "bg-brand-200 text-brand-900";
+//     case "Backend":
+//       return "bg-brand-700 text-white";
+//     case "AI & Data":
+//       return "bg-brand-400 text-white";
+//     case "Mobile":
+//       return "bg-brand-300 text-brand-900";
+//     case "Cybersecurity":
+//       return "bg-brand-600 text-white";
+//     default:
+//       return "bg-brand-400 text-white";
+//   }
+// };
 
 // const getLevelLabel = (level: string) => {
 //   switch (level) {
