@@ -86,7 +86,18 @@ export const PostLogout = async ()=>{
     return error;
   }
 }
-// export const GetMe = async ()=>{
-//    const res = await axiosInstance.get('/auth/me');
-//   return res.data;
-// }
+// gui yeu cau lay ma otp
+export const PostRetryPassword = async(data:{email:string})=>{
+  const res = await axiosInstance.post('/auth/retry-password',data);
+  return res.data;
+}
+// kiem tra ma otp
+export const PostVerifyForgotOTP = async (data: { email: string; code: string }) => {
+  const res = await axiosInstance.post('/auth/verify-forgot-otp', data);
+  return res.data;
+};
+// thay doi mat khau
+export const PostChangePassword = async(data:any)=>{
+  const res = await axiosInstance.post('/auth/change-password',data);
+  return res.data;
+}
