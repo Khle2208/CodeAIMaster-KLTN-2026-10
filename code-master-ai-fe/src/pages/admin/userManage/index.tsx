@@ -82,10 +82,10 @@ const UserManage: React.FC = () => {
     return () => clearTimeout(delaySearch);
   }, [searchInput]); // Xử lý khi bấm nút Tìm kiếm hoặc Enter
 
-  const handleSearch = () => {
-    setCurrentPage(1); // Reset về trang 1 khi tìm kiếm mới
-    setActiveSearch(searchInput.trim());
-  };
+//   const handleSearch = () => {
+//     setCurrentPage(1); // Reset về trang 1 khi tìm kiếm mới
+//     setActiveSearch(searchInput.trim());
+//   };
 
   //   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
   //     if (e.key === "Enter") handleSearch();
