@@ -12,6 +12,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { AiAssistantService } from '@/ai-assistant/ai-assistant.service';
 import { JUDGE0_LANGUAGES } from '@/common/constants/languages.constant';
+import { UserLessonProgressService } from '../user-lesson-progress/user-lesson-progress.service';
 
 @Injectable()
 export class SubmissionsService {
@@ -23,6 +24,7 @@ export class SubmissionsService {
     @InjectModel(CodeAssignment.name) private readonly codeAssignmentModel: Model<CodeAssignment>,
     private readonly aiAssistantService: AiAssistantService,
     private readonly httpService: HttpService,
+    private readonly userLessonProgressService: UserLessonProgressService,
   ) {}
 
  async submitCode(
@@ -154,6 +156,12 @@ export class SubmissionsService {
         ai_hint: null
       });
 
+      await this.userLessonProgressService.handleAssignmentGraded(
+        userId,
+        assignmentId,
+        finalStatus === 'ACCEPTED',
+      );
+
       return {
         message: 'Chấm bài hoàn tất',
         submission: newSubmission,
@@ -280,4 +288,3 @@ export class SubmissionsService {
     // };
   }
 }
-
