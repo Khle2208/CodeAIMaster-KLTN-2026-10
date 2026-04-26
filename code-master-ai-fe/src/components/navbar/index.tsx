@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -136,7 +136,7 @@ const Navbar = () => {
               </NavLink>
             </h1>
           </div>
-          <nav className="hidden md:flex space-x-8 pt-2">
+          <nav id="tour-nav-links" className="hidden md:flex space-x-8 pt-2">
             <NavLink to="/" className={`font-medium text-brand-700 cursor-pointer transition-colors whitespace-nowrap hover:text-brand-400 ${navSelected === '/' ? 'border-b-2 border-brand-700' : ''}`}>Trang chủ</NavLink>
             <NavLink to="/introduce" className={`font-medium text-brand-700 cursor-pointer transition-colors whitespace-nowrap hover:text-brand-400 ${navSelected === '/introduce' ? 'border-b-2 border-brand-700' : ''}`}>Giới thiệu</NavLink>
             <NavLink to="/blog" className={`font-medium text-brand-700 cursor-pointer transition-colors whitespace-nowrap hover:text-brand-400 ${navSelected === '/blog' ? 'border-b-2 border-brand-700' : ''}`}>Tin tức</NavLink>
@@ -145,7 +145,7 @@ const Navbar = () => {
           </nav>
         </div>
         <div className="flex space-x-6">
-          <div className="flex items-center rounded-full bg-brand-25 space-x-3 px-4 py-2 shadow-md w-[400px]">
+          <div id="tour-search" className="flex items-center rounded-full bg-brand-25 space-x-3 px-4 py-2 shadow-md w-[400px]">
             <SearchOutlined className="cursor-pointer hover:text-brand-400" onClick={() => {
               setGlobalSearchKeyword(searchValue);
               navigate("/course");
@@ -176,29 +176,31 @@ const Navbar = () => {
             )}
           </div>
 
-          {userInfo && (
-            <div className="flex items-center space-x-3 relative">
-              <ShoppingCartOutlined onClick={() => navigate('/cart')} className="text-2xl text-brand-700 cursor-pointer hover:text-brand-400 " />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {countQuantityCart}
-              </span>
-            </div>
-          )}
-          {userInfo ? (
-            <div>
-              <div className="flex items-center space-x-3">
-                <Dropdown menu={{ items }} placement="bottomLeft">
-                  <div className="text-lg w-10 h-10 rounded-full bg-brand-600 font-medium text-white cursor-pointer flex items-center justify-center ">
-                    {<UserOutlined />}
-                  </div>
-                </Dropdown>
+          <div id="tour-auth" className="flex items-center space-x-6">
+            {userInfo && (
+              <div className="flex items-center space-x-3 relative">
+                <ShoppingCartOutlined onClick={() => navigate('/cart')} className="text-2xl text-brand-700 cursor-pointer hover:text-brand-400 " />
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {countQuantityCart}
+                </span>
               </div>
-            </div>
-          ) : (
-            <div onClick={() => navigate('/login')} className="rounded-full bg-brand-600 text-white px-5 py-2 cursor-pointer font-semibold hover:text-brand-100 shadow-md">
-              Đăng Nhập
-            </div>
-          )}
+            )}
+            {userInfo ? (
+              <div>
+                <div className="flex items-center space-x-3">
+                  <Dropdown menu={{ items }} placement="bottomLeft">
+                    <div className="text-lg w-10 h-10 rounded-full bg-brand-600 font-medium text-white cursor-pointer flex items-center justify-center ">
+                      {<UserOutlined />}
+                    </div>
+                  </Dropdown>
+                </div>
+              </div>
+            ) : (
+              <div onClick={() => navigate('/login')} className="rounded-full bg-brand-600 text-white px-5 py-2 cursor-pointer font-semibold hover:text-brand-100 shadow-md">
+                Đăng Nhập
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>
