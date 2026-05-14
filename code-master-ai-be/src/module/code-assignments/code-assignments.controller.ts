@@ -19,6 +19,7 @@ import { PermissionsGuard } from '@/auth/passport/permissions.guard';
 import { RequirePermissions } from '@/auth/decorators/permisions.decorator';
 
 @Controller('code-assignments')
+@UseGuards(JwtAuthGuard)
 export class CodeAssignmentsController {
   constructor(
     private readonly codeAssignmentsService: CodeAssignmentsService,

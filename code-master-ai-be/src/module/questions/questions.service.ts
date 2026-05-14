@@ -29,7 +29,7 @@ export class QuestionsService {
     return this.questionModel.create(createQuestionDto);
   }
 
-  async findAll(quiz_id?: string): Promise<Question[]> {
+  async findAll(quiz_id?: string): Promise<any[]> {
     const filter: Record<string, any> = {};
     if (quiz_id) {
       if (!Types.ObjectId.isValid(quiz_id)) {
@@ -38,15 +38,16 @@ export class QuestionsService {
       filter.quiz_id = quiz_id;
     }
 
-    return this.questionModel.find(filter).lean().exec();
+    const questions = await this.questionModel.find(filter).lean().exec();
+    return questions.map((question) => this.sanitizeQuestion(question as any));
   }
 
-  async findOne(id: string): Promise<Question> {
+  async findOne(id: string): Promise<any> {
     const question = await this.questionModel.findById(id).lean().exec();
     if (!question) {
       throw new NotFoundException('Question not found');
     }
-    return question;
+    return this.sanitizeQuestion(question as any);
   }
 
   async update(
@@ -78,5 +79,11 @@ export class QuestionsService {
     if (!deleted) {
       throw new NotFoundException('Question not found');
     }
+  }
+
+  private sanitizeQuestion(question: Record<string, any>) {
+    const safeQuestion = { ...question };
+    delete safeQuestion.correct_answer;
+    return safeQuestion;
   }
 }

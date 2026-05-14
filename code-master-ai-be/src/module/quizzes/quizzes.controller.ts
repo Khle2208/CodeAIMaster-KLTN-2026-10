@@ -12,8 +12,11 @@ import { QuizzesService } from './quizzes.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { ParseObjectIdPipe } from '@/common/pipes/parse-object-id.pipe';
+import { JwtAuthGuard } from '@/auth/passport/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Controller('quizzes')
+@UseGuards(JwtAuthGuard)
 export class QuizzesController {
   constructor(private readonly quizzesService: QuizzesService) {}
 

@@ -18,6 +18,7 @@ import { PermissionsGuard } from '@/auth/passport/permissions.guard';
 import { RequirePermissions } from '@/auth/decorators/permisions.decorator';
 
 @Controller('assignments')
+@UseGuards(JwtAuthGuard)
 export class AssignmentsController {
   constructor(private readonly assignmentsService: AssignmentsService) {}
 
