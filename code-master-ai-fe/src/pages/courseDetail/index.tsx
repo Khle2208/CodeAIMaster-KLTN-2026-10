@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  CourseDetail,
-  TabKey,
-  fakeRelatedCourses,
-} from "../../data/courseDetail";
+import { CourseDetail, TabKey } from "../../data/courseDetail";
 import { useParams, useNavigate } from "react-router-dom";
 import { GetCoursesDetail } from "../../api/courseDetail";
+import { GetFeaturedCourses } from "../../api/course";
 import { createCartItem } from "../../api/cart";
+import { getMyCourses } from "../../api/enrollment";
 import { Modal } from "antd";
 import { useUserInfo } from "../../store/user";
 const formatPrice = (price: number) =>
@@ -56,6 +54,8 @@ export default function CourseDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [courseDetail, setCourseDetail] = useState<CourseDetail | null>(null);
+  const [relatedCourses, setRelatedCourses] = useState<any[]>([]);
+  const [isPurchased, setIsPurchased] = useState(false);
   const [open, setOpen] = useState(false);
   const [confirmLoading] = useState(false);
   const { userInfo } = useUserInfo();
@@ -74,6 +74,43 @@ export default function CourseDetailPage() {
     };
 
     fetchCourseDetail();
+  }, [id]);
+
+  useEffect(() => {
+    const checkPurchasedCourse = async () => {
+      if (!id || !userInfo) {
+        setIsPurchased(false);
+        return;
+      }
+
+      try {
+        const courses = await getMyCourses();
+        setIsPurchased(
+          Array.isArray(courses) &&
+            courses.some((course: any) => String(course._id) === String(id)),
+        );
+      } catch (error) {
+        setIsPurchased(false);
+      }
+    };
+
+    checkPurchasedCourse();
+  }, [id, userInfo]);
+
+  useEffect(() => {
+    const fetchRelatedCourses = async () => {
+      try {
+        const courses = await GetFeaturedCourses();
+        setRelatedCourses(
+          (courses || []).filter((course: any) => String(course._id) !== String(id)),
+        );
+      } catch (error) {
+        console.error("Lỗi khi lấy khóa học liên quan:", error);
+        setRelatedCourses([]);
+      }
+    };
+
+    fetchRelatedCourses();
   }, [id]);
 
   const showModal = () => {
@@ -216,12 +253,7 @@ export default function CourseDetailPage() {
                 >
                   Nội dung khóa học
                 </button>
-                <button
-                  className={tabButtonClass(activeTab === "reviews")}
-                  onClick={() => setActiveTab("reviews")}
-                >
-                  Đánh giá
-                </button>
+                
               </div>
 
               <div className="space-y-10">
@@ -244,13 +276,13 @@ export default function CourseDetailPage() {
                   </section>
                 )}
 
-                {(activeTab === "intro" || activeTab === "content") && (
+                {( activeTab === "content") && (
                   <section>
                     <h3 className="mb-5 text-2xl font-bold text-brand-800">
                       Nội dung khóa học
                     </h3>
 
-                    {(activeTab === "intro" || activeTab === "content") && (
+                    {( activeTab === "content") && (
                       <section>
                         <div className="space-y-4">
                           {courseDetail.lessons?.map((lesson, index) => (
@@ -272,31 +304,10 @@ export default function CourseDetailPage() {
                                     Bài {lesson.lesson_order}: {lesson.title}
                                   </p>
                                 </div>
-                                <span className="text-xl text-brand-400">
-                                  {openSectionIndex === index ? "−" : "+"}
-                                </span>
+                                
                               </button>
 
-                              {openSectionIndex === index && (
-                                <div className="space-y-3 border-t border-brand-50 px-5 py-4">
-                                  {lesson.content && (
-                                    <p className="text-sm text-slate-700">
-                                      {lesson.content}
-                                    </p>
-                                  )}
-
-                                  {lesson.video_url && (
-                                    <a
-                                      href={lesson.video_url}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="inline-flex rounded-lg bg-brand-50 px-3 py-2 text-sm font-bold text-brand-700"
-                                    >
-                                      Xem video bài học
-                                    </a>
-                                  )}
-                                </div>
-                              )}
+                             
                             </div>
                           ))}
                         </div>
@@ -359,7 +370,7 @@ export default function CourseDetailPage() {
                 </div>
 
                 <div className="space-y-4">
-                  {courseDetail.price === 0 ? (
+                  {isPurchased || courseDetail.price === 0 ? (
                     <button
                       onClick={() => navigate(`/learn/${courseDetail._id}`)}
                       className="w-full rounded-2xl bg-brand-600 px-5 py-4 font-bold text-white transition hover:bg-brand-700"
@@ -423,16 +434,21 @@ export default function CourseDetailPage() {
             <h2 className="text-3xl font-extrabold text-brand-800">
               Khóa học liên quan
             </h2>
-            <a href="/" className="font-bold text-brand-600 hover:underline">
+            <button
+              type="button"
+              onClick={() => navigate("/course")}
+              className="font-bold text-brand-600 hover:underline"
+            >
               Xem tất cả
-            </a>
+            </button>
           </div>
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {fakeRelatedCourses?.map((item) => (
+            {relatedCourses.map((item) => (
               <div
-                key={item.id}
-                className="overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                key={item._id}
+                onClick={() => navigate(`/course/${item._id}`)}
+                className="cursor-pointer overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
               >
                 <div className="relative h-52 overflow-hidden">
                   <img
@@ -452,10 +468,12 @@ export default function CourseDetailPage() {
 
                   <div className="flex items-center justify-between border-t border-brand-50 pt-4">
                     <span className="text-xl font-black text-brand-800">
-                      {formatPrice(item.price)}
+                      {Number(item.price || 0) === 0
+                        ? "Miễn phí"
+                        : formatPrice(Number(item.price || 0))}
                     </span>
                     <span className="rounded-lg bg-brand-50 px-2 py-1 text-xs font-bold text-brand-700">
-                      4.8 ★
+                      Nổi bật
                     </span>
                   </div>
                 </div>
@@ -467,14 +485,17 @@ export default function CourseDetailPage() {
         <section className="relative mt-20 overflow-hidden rounded-[2rem] bg-brand-700 px-8 py-14 text-center text-white shadow-2xl sm:px-12">
           <div className="relative z-10 space-y-5">
             <h2 className="text-3xl font-extrabold sm:text-5xl">
-              Bắt đầu hành trình Backend ngay hôm nay
+              Bắt đầu hành trình lập trình ngay hôm nay
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-brand-50">
-              Làm chủ NestJS và MongoDB qua dự án thực tế với mức giá ưu đãi.
+              Làm chủ công nghệ qua dự án thực tế với mức giá ưu đãi.
             </p>
             <div className="pt-4">
-              <button className="rounded-2xl bg-white px-10 py-4 font-black text-brand-700 transition hover:bg-brand-50">
-                Đăng ký học ngay
+              <button 
+                onClick={() => navigate("/introduce")}
+                className="rounded-2xl bg-white px-10 py-4 font-black text-brand-700 transition hover:bg-brand-50"
+              >
+                Về chúng tôi
               </button>
             </div>
           </div>
