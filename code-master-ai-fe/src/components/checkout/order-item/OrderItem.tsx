@@ -7,20 +7,20 @@ interface OrderItemProps {
 
 const OrderItem = ({ item }: OrderItemProps) => {
   return (
-    <div className="flex gap-4">
-      <div className="size-16 rounded-lg bg-white/10 overflow-hidden flex-shrink-0 border border-white/10">
+    <div className="flex gap-4 rounded-2xl border border-brand-700/10 bg-brand-25/70 p-3">
+      <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border border-brand-700/10 bg-brand-100">
         <img
           alt={item.title}
-          className="w-full h-full object-cover"
+          className="h-full w-full object-cover"
           src={item.image}
         />
       </div>
 
       <div className="flex-1">
-        <p className="text-sm font-bold leading-tight line-clamp-2">
+        <p className="line-clamp-2 text-sm font-black leading-tight text-brand-900">
           {item.title}
         </p>
-        <p className="text-white/70 text-sm mt-1">
+        <p className="mt-2 text-sm font-bold text-brand-700">
           {item.price.toLocaleString("vi-VN")}đ
         </p>
       </div>

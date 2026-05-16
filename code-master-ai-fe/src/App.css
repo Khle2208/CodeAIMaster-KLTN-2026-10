@@ -44,6 +44,36 @@
   outline-offset: 0 !important;
 }
 
+.driverjs-theme-codemaster {
+  max-width: min(360px, calc(100vw - 24px));
+}
+
+.driverjs-theme-codemaster .driver-popover-title,
+.driverjs-theme-codemaster .driver-popover-description {
+  color: #344e41;
+}
+
+.driverjs-theme-codemaster .driver-popover-footer {
+  gap: 8px;
+}
+
+.driverjs-theme-codemaster .driver-popover-prev-btn,
+.driverjs-theme-codemaster .driver-popover-next-btn {
+  border-radius: 9999px;
+  text-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .driverjs-theme-codemaster {
+    width: calc(100vw - 24px);
+  }
+
+  .driverjs-theme-codemaster .driver-popover-footer {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+}
+
 .App-header {
   background-color: #282c34;
   min-height      : 100vh;
