@@ -29,33 +29,38 @@ const PaymentMethodSection = ({
   ] as const;
 
   return (
-    <section className="bg-white p-8 rounded-lg border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]">
-      <div className="flex items-center gap-3 mb-8">
-        <span className="material-symbols-outlined text-[#4a5d4e]">
+    <section className="rounded-[2rem] border border-brand-700/10 bg-white/90 p-5 shadow-[0_18px_44px_rgba(31,45,39,0.08)] sm:p-6">
+      <div className="mb-6 flex items-center gap-3 border-b border-brand-700/10 pb-5">
+        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
           <Wallet />
         </span>
-        <h2 className="text-xl font-bold text-slate-900">
-          Phương thức thanh toán
-        </h2>
+        <div>
+          <h2 className="text-xl font-black text-brand-900">
+            Phương thức thanh toán
+          </h2>
+          <p className="mt-1 text-sm text-brand-800/65">
+            Bạn sẽ được chuyển đến cổng thanh toán an toàn để hoàn tất giao dịch.
+          </p>
+        </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         {methods.map((method) => {
           const active = paymentMethod === method.value;
 
           return (
             <label
               key={method.value}
-              className={`flex items-center justify-between p-5 rounded-lg border-2 transition-all cursor-pointer ${
+              className={`flex cursor-pointer items-center justify-between rounded-2xl border p-5 transition-all ${
                 active
-                  ? "border-[#4a5d4e] bg-[#4a5d4e]/5"
-                  : "border-slate-200 hover:border-[#4a5d4e]"
+                  ? "border-brand-600/35 bg-brand-50 shadow-[0_14px_34px_rgba(31,45,39,0.10)]"
+                  : "border-brand-700/10 bg-brand-25/50 hover:border-brand-600/30 hover:bg-white"
               }`}
             >
               <div className="flex items-center gap-4">
                 <input
                   checked={active}
-                  className="text-[#4a5d4e] focus:ring-[#4a5d4e]"
+                  className="text-brand-700 focus:ring-brand-600"
                   name="payment"
                   type="radio"
                   onChange={() => onChange("paymentMethod", method.value)}
@@ -70,25 +75,28 @@ const PaymentMethodSection = ({
                   </span> */}
 
                   <span
-                    className={`p-2 rounded-md flex items-center justify-center ${
+                    className={`flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-700/10 ${
                       active ? "bg-white shadow-sm" : "bg-slate-100"
                     }`}
                   >
                     <img
                       src={method.icon}
                       alt={method.title}
-                      className="w-8 h-8 object-contain"
+                      className="h-8 w-8 object-contain"
                     />
                   </span>
                   <div>
-                    <p className="font-bold text-slate-900">{method.title}</p>
+                    <p className="font-black text-brand-900">{method.title}</p>
+                    <p className="mt-1 text-xs font-medium text-brand-800/60">
+                      Cổng thanh toán bảo mật
+                    </p>
                     {/* <p className="text-xs text-slate-500">{method.desc}</p> */}
                   </div>
                 </div>
               </div>
 
               {active && (
-                <div className="flex gap-2 text-[#4a5d4e]">
+                <div className="flex gap-2 text-brand-700">
                   <span className="material-symbols-outlined text-sm">
                     <CircleCheck />
                   </span>

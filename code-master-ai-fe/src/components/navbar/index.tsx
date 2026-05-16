@@ -132,81 +132,65 @@ const Navbar = () => {
     },
   ];
 
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    [
+      "relative rounded-full px-4 py-2 text-sm transition-all duration-300",
+      isActive
+        ? "bg-brand-700 text-brand-25 shadow-sm"
+        : "font-medium text-brand-900/75 hover:bg-brand-100/70 hover:text-brand-800",
+    ].join(" ");
+
   return (
-    <header className="bg-brand-50 shadow-md sticky top-0 z-50">
-      <div className="container mx-auto px-4 md:px-10 py-3 flex items-center justify-between">
+    <header className="sticky top-0 z-50 border-b border-brand-700/10 bg-brand-25/95 shadow-[0_10px_30px_rgba(31,45,39,0.08)] backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8 lg:px-10">
         {/* ===== LEFT ===== */}
-        <div className="flex items-center gap-2 md:gap-6">
+        <div className="flex items-center gap-3 md:gap-7">
           {/* Logo */}
-          <div className="md:hidden flex items-center">
-            <MenuOutlined
-              className="text-xl cursor-pointer"
-              onClick={() => setIsOpen(true)}
-            />
-          </div>
+          <button
+            type="button"
+            aria-label="Mở menu"
+            onClick={() => setIsOpen(true)}
+            className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/80 text-brand-800 shadow-sm ring-1 ring-brand-700/10 transition hover:bg-brand-100 md:hidden"
+          >
+            <MenuOutlined className="text-lg" />
+          </button>
           <NavLink
             to="/"
-            className="flex items-center gap-2 text-xl font-bold text-brand-700 "
+            className="flex items-center gap-3 text-xl font-extrabold tracking-tight text-brand-800"
           >
-            <CodeOutlined />
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-700 text-brand-25 shadow-[0_12px_28px_rgba(52,78,65,0.24)]">
+              <CodeOutlined />
+            </span>
             <h1 className="hidden md:flex">CodeMaster AI</h1>
           </NavLink>
 
           {/* Desktop Menu */}
           <nav
             id="tour-nav-links"
-            className="hidden md:flex gap-6 items-center"
+            className="hidden items-center gap-1 rounded-full bg-white/70 p-1 shadow-sm ring-1 ring-brand-700/10 md:flex"
           >
             <NavLink
               to="/"
               end
-              className={({ isActive }) =>
-                [
-                  "relative py-1 text-brand-900/85 transition-colors duration-200 hover:text-brand-700",
-                  isActive
-                    ? "font-bold text-brand-700 after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:rounded-full after:bg-brand-600 after:origin-left after:scale-x-100"
-                    : "font-medium after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:rounded-full after:bg-brand-500 after:transition-all after:duration-300 hover:after:w-full",
-                ].join(" ")
-              }
+              className={navLinkClass}
             >
               Trang chủ
             </NavLink>
             <NavLink
               to="/introduce"
-              className={({ isActive }) =>
-                [
-                  "relative py-1 text-brand-900/85 transition-colors duration-200 hover:text-brand-700",
-                  isActive
-                    ? "font-bold text-brand-700 after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:rounded-full after:bg-brand-600"
-                    : "font-medium after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:rounded-full after:bg-brand-500 after:transition-all after:duration-300 hover:after:w-full",
-                ].join(" ")
-              }
+              className={navLinkClass}
             >
               Giới thiệu
             </NavLink>
             <NavLink
               to="/blog"
-              className={({ isActive }) =>
-                [
-                  "relative py-1 text-brand-900/85 transition-colors duration-200 hover:text-brand-700",
-                  isActive
-                    ? "font-bold text-brand-700 after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:rounded-full after:bg-brand-600"
-                    : "font-medium after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:rounded-full after:bg-brand-500 after:transition-all after:duration-300 hover:after:w-full",
-                ].join(" ")
-              }
+              className={navLinkClass}
             >
               Tin tức
             </NavLink>
             <NavLink
               to="/course"
-              className={({ isActive }) =>
-                [
-                  "relative py-1 text-brand-900/85 transition-colors duration-200 hover:text-brand-700",
-                  isActive
-                    ? "font-bold text-brand-700 after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:rounded-full after:bg-brand-600"
-                    : "font-medium after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:rounded-full after:bg-brand-500 after:transition-all after:duration-300 hover:after:w-full",
-                ].join(" ")
-              }
+              className={navLinkClass}
             >
               Khóa học
             </NavLink>
@@ -215,11 +199,14 @@ const Navbar = () => {
         </div>
 
         {/* ===== RIGHT ===== */}
-        <div className="flex items-center gap-3 md:gap-5">
+        <div id="tour-auth" className="flex items-center gap-2 md:gap-3">
           {/* Search */}
-          <div className="hidden md:flex items-center bg-white px-3 py-2 rounded-full shadow w-[300px] lg:w-[400px]">
+          <div
+            id="tour-search"
+            className="hidden h-11 items-center rounded-full bg-white/85 px-4 shadow-sm ring-1 ring-brand-700/10 transition focus-within:ring-2 focus-within:ring-brand-500/35 md:flex md:w-[280px] lg:w-[380px]"
+          >
             <SearchOutlined
-              className="cursor-pointer"
+              className="cursor-pointer text-brand-700"
               onClick={() => {
                 setGlobalSearchKeyword(searchValue);
                 navigate("/course");
@@ -230,10 +217,10 @@ const Navbar = () => {
               options={options}
               onSearch={handleSearch}
               onSelect={handleSelect}
-              className="w-full"
+              className="custom-autocomplete w-full"
             >
               <input
-                className="w-full outline-none px-2"
+                className="w-full bg-transparent px-3 text-sm text-brand-900 outline-none placeholder:text-brand-700/45"
                 placeholder="Tìm khóa học..."
               />
             </AutoComplete>
@@ -244,14 +231,14 @@ const Navbar = () => {
             <>
               <BookFilled
                 onClick={() => navigate("/myCourses")}
-                className="text-xl cursor-pointer"
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-xl text-brand-800 transition hover:bg-white hover:text-brand-600 hover:shadow-sm"
               />
               <div className="relative">
                 <ShoppingCartOutlined
                   onClick={() => navigate("/cart")}
-                  className="text-xl cursor-pointer"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-xl text-brand-800 transition hover:bg-white hover:text-brand-600 hover:shadow-sm"
                 />
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-xs font-bold text-white shadow-sm ring-2 ring-brand-25">
                   {countQuantityCart}
                 </span>
               </div>
@@ -262,14 +249,14 @@ const Navbar = () => {
           {/* User */}
           {userInfo ? (
             <Dropdown menu={{ items }}>
-              <div className="w-8 h-8 bg-brand-600 text-white flex items-center justify-center rounded-full cursor-pointer">
+              <div className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-brand-700 text-brand-25 shadow-sm ring-1 ring-brand-700/10 transition hover:bg-brand-600">
                 <UserOutlined />
               </div>
             </Dropdown>
           ) : (
             <button
               onClick={() => navigate("/login")}
-              className="bg-brand-600 text-white px-4 py-1 rounded-full"
+              className="rounded-full bg-brand-700 px-5 py-2 text-sm font-semibold text-brand-25 shadow-[0_12px_24px_rgba(52,78,65,0.22)] transition hover:-translate-y-0.5 hover:bg-brand-600 hover:shadow-[0_16px_30px_rgba(52,78,65,0.28)]"
             >
               Đăng nhập
             </button>
@@ -282,14 +269,21 @@ const Navbar = () => {
 
       {/* ===== MOBILE MENU ===== */}
       {isOpen && (
-        <div className="md:hidden bg-white shadow-lg px-6 py-4 space-y-4">
-          <div className="flex justify-end">
+        <div className="border-t border-brand-700/10 bg-brand-25 px-4 pb-5 pt-3 shadow-lg md:hidden">
+          <div className="mb-3 flex justify-end">
             {/* <div className="font-bold">Menu</div> */}
-            <CloseOutlined onClick={() => setIsOpen(false)} />
+            <button
+              type="button"
+              aria-label="Đóng menu"
+              onClick={() => setIsOpen(false)}
+              className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-brand-800 shadow-sm ring-1 ring-brand-700/10"
+            >
+              <CloseOutlined />
+            </button>
           </div>
 
           <div
-            className="cursor-pointer px-3 py-2 rounded-lg hover:bg-gray-100 active:scale-[0.98] transition"
+            className="cursor-pointer rounded-2xl px-4 py-3 font-medium text-brand-900 transition hover:bg-white hover:shadow-sm active:scale-[0.98]"
             onClick={() => {
               navigate("/");
               setIsOpen(false);
@@ -298,7 +292,7 @@ const Navbar = () => {
             Trang chủ
           </div>
           <div
-            className="cursor-pointer px-3 py-2 rounded-lg hover:bg-gray-100 active:scale-[0.98] transition"
+            className="cursor-pointer rounded-2xl px-4 py-3 font-medium text-brand-900 transition hover:bg-white hover:shadow-sm active:scale-[0.98]"
             onClick={() => {
               navigate("/introduce");
               setIsOpen(false);
@@ -307,7 +301,7 @@ const Navbar = () => {
             Giới thiệu
           </div>
           <div
-            className="cursor-pointer px-3 py-2 rounded-lg hover:bg-gray-100 active:scale-[0.98] transition"
+            className="cursor-pointer rounded-2xl px-4 py-3 font-medium text-brand-900 transition hover:bg-white hover:shadow-sm active:scale-[0.98]"
             onClick={() => {
               navigate("/blog");
               setIsOpen(false);
@@ -316,7 +310,7 @@ const Navbar = () => {
             Tin tức
           </div>
           <div
-            className="cursor-pointer px-3 py-2 rounded-lg hover:bg-gray-100 active:scale-[0.98] transition"
+            className="cursor-pointer rounded-2xl px-4 py-3 font-medium text-brand-900 transition hover:bg-white hover:shadow-sm active:scale-[0.98]"
             onClick={() => {
               navigate("/course");
               setIsOpen(false);

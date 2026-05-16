@@ -11,7 +11,7 @@ interface CheckoutFormProps {
 
 const CheckoutForm = ({ formData, onChange }: CheckoutFormProps) => {
   return (
-    <div className="lg:col-span-2 space-y-8">
+    <div className="space-y-6 lg:col-span-2">
       <CustomerInfoSection formData={formData} onChange={onChange} />
       <PaymentMethodSection
         paymentMethod={formData.paymentMethod}
