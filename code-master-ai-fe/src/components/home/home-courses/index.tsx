@@ -1,5 +1,9 @@
 import React, { useEffect } from "react";
-import { ShoppingCartOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+  ArrowRightOutlined,
+  CheckCircleFilled,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import { GetCategoryNames } from "../../../data/course";
 import { GetCourses } from "../../../api/course";
 import { ICourse } from "../../../pages/course";
@@ -47,73 +51,100 @@ const HomeCourses = () => {
 
   return (
     <AnimateOnScroll>
-      <div className="w-full py-10 sm:py-12 px-4 sm:px-8 lg:px-16 flex flex-col gap-6">
+      <div className="w-full bg-brand-25 px-5 py-14 sm:px-8 sm:py-20 lg:px-10">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
         {/* Title */}
-        <div className="text-xl sm:text-2xl font-bold text-brand-700 text-center">
-          Tất cả khóa học
+        <div className="flex flex-col gap-4 text-center md:flex-row md:items-end md:justify-between md:text-left">
+          <div className="max-w-2xl">
+            <p className="mx-auto mb-3 flex w-fit items-center gap-2 rounded-full border border-brand-700/10 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.14em] text-brand-600 shadow-sm md:mx-0">
+              <CheckCircleFilled className="text-brand-500" />
+              Khám phá theo nhu cầu
+            </p>
+            <h2 className="text-3xl font-black tracking-tight text-brand-900 sm:text-4xl">
+              Tất cả khóa học
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-brand-800/65 sm:text-base">
+              Chọn danh mục phù hợp và xem nhanh những khóa học đang sẵn sàng để bắt đầu.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-brand-700/10 bg-white px-4 py-3 text-sm font-semibold text-brand-800 shadow-sm">
+            {filteredCourses.length} khóa học hiển thị
+          </div>
         </div>
 
         {/* Category pills */}
-        <div className="flex justify-center gap-2 sm:gap-4 flex-wrap">
+        <div className="flex gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:justify-center sm:overflow-visible">
           {categories.map((item, index) => (
-            <div
+            <button
+              type="button"
               key={index}
               onClick={() => setSelectedCategory(item)}
-              className={`text-gray-600 text-xs sm:text-sm w-fit font-bold rounded-full py-2 px-4 sm:px-5 cursor-pointer transition-colors duration-300
+              className={`w-fit shrink-0 rounded-full px-4 py-2 text-xs font-bold transition duration-300 sm:px-5 sm:text-sm
                                 ${
                                   selectedCategory === item
-                                    ? "bg-green-900 text-white hover:bg-green-900 cursor-not-allowed"
-                                    : "bg-gray-100 hover:bg-gray-200"
+                                    ? "bg-brand-800 text-brand-25 shadow-[0_12px_26px_rgba(52,78,65,0.24)]"
+                                    : "border border-brand-700/10 bg-white text-brand-800 shadow-sm hover:-translate-y-0.5 hover:border-brand-600/30 hover:bg-brand-50"
                                 }`}
             >
               {item}
-            </div>
+            </button>
           ))}
         </div>
 
         {/* Course list */}
         {loading ? (
-          <div className="flex justify-center py-20">
-            <LoadingOutlined className="text-4xl" />
+          <div className="flex min-h-[260px] items-center justify-center rounded-[2rem] border border-brand-700/10 bg-white shadow-sm">
+            <LoadingOutlined className="text-4xl text-brand-700" />
           </div>
         ) : filteredCourses.length === 0 ? (
-          <div className="flex justify-center py-20">
-            <Empty description="Không có kết quả tìm kiếm" />
+          <div className="flex justify-center rounded-[2rem] border border-dashed border-brand-700/20 bg-white px-6 py-16 shadow-sm">
+            <Empty description="Không có khóa học phù hợp" />
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="grid gap-4">
             {filteredCourses.map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col sm:flex-row sm:justify-between gap-4 sm:gap-0 border-b pb-4"
+                className="group flex flex-col gap-4 rounded-[1.75rem] border border-brand-700/10 bg-white p-4 shadow-[0_16px_40px_rgba(31,45,39,0.07)] transition duration-300 hover:-translate-y-1 hover:border-brand-500/25 hover:shadow-[0_24px_60px_rgba(31,45,39,0.13)] sm:flex-row sm:items-center sm:justify-between sm:p-5"
               >
                 {/* Left */}
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                  <img
-                    src={item.thumbnail}
-                    alt={item.title}
-                    className="w-full sm:w-52 h-44 sm:h-24 object-cover rounded-lg"
-                  />
-                  <div className="flex flex-col gap-1 sm:gap-2">
-                    <div className="text-base sm:text-lg font-bold text-brand-600">
+                <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center">
+                  <div className="relative h-48 w-full overflow-hidden rounded-2xl bg-brand-100 sm:h-28 sm:w-52 sm:shrink-0">
+                    <img
+                      src={item.thumbnail}
+                      alt={item.title}
+                      className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.08em] text-brand-800 shadow-sm">
+                      {item.category?.category_name}
+                    </div>
+                  </div>
+                  <div className="flex min-w-0 flex-col gap-2">
+                    <div className="line-clamp-2 text-lg font-black leading-7 text-brand-900">
                       {item.title}
                     </div>
-                    <div className="text-xs sm:text-sm font-normal text-gray-500">
+                    <div className="line-clamp-2 text-sm leading-6 text-brand-800/65">
                       {item.description}
                     </div>
-                    <div className="text-xs font-normal text-gray-500">
+                    <div className="flex w-fit items-center rounded-full bg-brand-100 px-3 py-1 text-xs font-bold text-brand-700">
                       {`Level: ${item.level}`}
                     </div>
                   </div>
                 </div>
 
                 {/* Right */}
-                <div className="flex flex-row sm:flex-col lg:flex-row justify-between sm:justify-center lg:justify-end gap-3 sm:gap-4 items-center">
-                  <div className="text-base sm:text-lg font-bold text-brand-700">
-                    {item.price.toLocaleString("vi-VN")}đ
+                <div className="flex flex-row items-center justify-between gap-3 border-t border-brand-700/10 pt-4 sm:min-w-[180px] sm:flex-col sm:justify-center sm:border-t-0 sm:pt-0 lg:flex-row lg:justify-end">
+                  <div className="text-lg font-black text-brand-800">
+                    {Number(item.price || 0) === 0
+                      ? "Miễn phí"
+                      : `${item.price.toLocaleString("vi-VN")}đ`}
                   </div>
-                  <button className="bg-brand-500 text-white py-2 px-4 rounded-lg hover:bg-brand-600 transition-colors duration-300">
-                    <ShoppingCartOutlined />
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/course/${item._id}`)}
+                    className="flex items-center gap-2 rounded-2xl bg-brand-700 px-4 py-3 text-sm font-bold text-brand-25 shadow-[0_12px_26px_rgba(52,78,65,0.22)] transition duration-300 hover:-translate-y-0.5 hover:bg-brand-600 hover:shadow-[0_16px_34px_rgba(52,78,65,0.28)]"
+                  >
+                    Xem chi tiết <ArrowRightOutlined />
                   </button>
                 </div>
               </div>
@@ -123,12 +154,14 @@ const HomeCourses = () => {
 
         {/* Load more */}
         <div className="flex justify-center">
-          <div
+          <button
+            type="button"
             onClick={() => navigate("/course")}
-            className="text-sm sm:text-base font-bold text-brand-600 border border-2 rounded-full border-brand-600 px-4 py-2 cursor-pointer hover:bg-gray-100 hover:text-green-900 transition-colors duration-300"
+            className="flex items-center gap-2 rounded-2xl border border-brand-700/15 bg-white px-6 py-3 text-sm font-bold text-brand-800 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-brand-600/30 hover:shadow-[0_16px_34px_rgba(31,45,39,0.12)] sm:text-base"
           >
-            Tải thêm khóa học
-          </div>
+            Tải thêm khóa học <ArrowRightOutlined />
+          </button>
+        </div>
         </div>
       </div>
     </AnimateOnScroll>
