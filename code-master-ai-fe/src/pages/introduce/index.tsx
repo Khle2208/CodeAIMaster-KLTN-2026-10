@@ -5,6 +5,11 @@ import AnimateOnScroll from "../../utils/animateOnScroll";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import KhoaImg from "../../assets/avt/Khoa.png";
+import PhuongImg from "../../assets/avt/Phuong.png";
+import SangImg from "../../assets/avt/Sang.png";
+import VinhImg from "../../assets/avt/Vinh.png";
+import VuImg from "../../assets/avt/Vu.png";
 
 type NumericStat = {
   kind: "num";
@@ -63,7 +68,9 @@ const IntroStatTile = ({ stat }: { stat: StatRow }) => {
         <motion.div
           className="text-2xl sm:text-3xl md:text-4xl font-black tabular-nums mb-2"
           animate={
-            inView ? { rotate: [0, 8, -8, 5, -5, 0], y: [0, -12, 2, -4, 0] } : {}
+            inView
+              ? { rotate: [0, 8, -8, 5, -5, 0], y: [0, -12, 2, -4, 0] }
+              : {}
           }
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -156,29 +163,29 @@ const Introduce = () => {
 
   const team = [
     {
-      name: "Thành viên thứ 1 — điền tên",
-      role: "",
-      icon: "👤",
+      name: "Lê Anh Khoa",
+      role: "Người sáng lập CodeMasterAI",
+      icon: KhoaImg,
     },
     {
-      name: "Thành viên thứ 2 — điền tên",
-      role: "",
-      icon: "👤",
+      name: "Trúc Phương",
+      role: "Người sáng lập CodeMasterAI",
+      icon: PhuongImg,
     },
     {
-      name: "Thành viên thứ 3 — điền tên",
-      role: "",
-      icon: "👤",
+      name: "Bùi Đình Sang",
+      role: "Người sáng lập CodeMasterAI",
+      icon: SangImg,
     },
     {
-      name: "Thành viên thứ 4 — điền tên",
-      role: "",
-      icon: "👤",
+      name: "Quang Vinh",
+      role: "Người sáng lập CodeMasterAI",
+      icon: VinhImg,
     },
     {
-      name: "Thành viên thứ 5 — điền tên",
-      role: "",
-      icon: "👤",
+      name: "Trần Anh Vũ",
+      role: "Người sáng lập CodeMasterAI",
+      icon: VuImg,
     },
   ];
 
@@ -196,16 +203,18 @@ const Introduce = () => {
 
                   <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight text-gray-900 mb-6">
                     Cách mạng hóa <br />
-                    việc học{" "}
-                    <span className="text-brand-600">Lập trình</span> <br />
+                    việc học <span className="text-brand-600">
+                      Lập trình
+                    </span>{" "}
+                    <br />
                     với AI
                   </h1>
 
                   <p className="text-base md:text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">
-                    CodeMaster AI không chỉ là một nền tảng học tập trực tuyến thông
-                    thường. Chúng tôi kết hợp lộ trình bài bản, bài tập thực hành
-                    phong phú và sức mạnh của trí tuệ nhân tạo để cá nhân hóa hành
-                    trình trở thành kỹ sư phần mềm của bạn.
+                    CodeMaster AI không chỉ là một nền tảng học tập trực tuyến
+                    thông thường. Chúng tôi kết hợp lộ trình bài bản, bài tập
+                    thực hành phong phú và sức mạnh của trí tuệ nhân tạo để cá
+                    nhân hóa hành trình trở thành kỹ sư phần mềm của bạn.
                   </p>
 
                   {showExtraIntro && (
@@ -217,19 +226,21 @@ const Introduce = () => {
                       className="mb-8 rounded-2xl border border-brand-100 bg-white/85 px-5 py-5 md:px-8 md:py-6 text-gray-600 text-sm md:text-base leading-relaxed max-w-xl shadow-sm space-y-4"
                     >
                       <p>
-                        Để làm được điều đó, chúng tôi luôn ưu tiên trải nghiệm học:
-                        ví dụ bài học được chẻ nhỏ theo chủ đề, có checkpoint kiểm
-                        tra và gợi ý chỉnh sửa từ AI giúp bạn hiểu sâu hơn từng bước.
+                        Để làm được điều đó, chúng tôi luôn ưu tiên trải nghiệm
+                        học: ví dụ bài học được chẻ nhỏ theo chủ đề, có
+                        checkpoint kiểm tra và gợi ý chỉnh sửa từ AI giúp bạn
+                        hiểu sâu hơn từng bước.
                       </p>
                       <p>
-                        Nền tảng cũng được thiết kế để bạn không “học vẹt”: mọi khóa
-                        đều gắn với ví dụ thực tế, và bạn được luyện tập trong môi
-                        trường code giống công cụ mà các đội sản phẩm hay dùng.
+                        Nền tảng cũng được thiết kế để bạn không “học vẹt”: mọi
+                        khóa đều gắn với ví dụ thực tế, và bạn được luyện tập
+                        trong môi trường code giống công cụ mà các đội sản phẩm
+                        hay dùng.
                       </p>
                       <p>
-                        Cuối cùng, cộng đồng và lộ trình rõ ràng giúp bạn biết mình đang ở
-                        đâu, cần cải thiện gì, và có thể chứng minh tiến bộ một cách
-                        minh bạch.
+                        Cuối cùng, cộng đồng và lộ trình rõ ràng giúp bạn biết
+                        mình đang ở đâu, cần cải thiện gì, và có thể chứng minh
+                        tiến bộ một cách minh bạch.
                       </p>
                     </motion.div>
                   )}
@@ -261,7 +272,9 @@ const Introduce = () => {
                     />
                     <div className="absolute bottom-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
                       <Zap size={16} className="text-yellow-500" />
-                      <span className="text-sm font-semibold">24/7 Trợ lý ảo</span>
+                      <span className="text-sm font-semibold">
+                        24/7 Trợ lý ảo
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -282,10 +295,10 @@ const Introduce = () => {
                     Sứ mệnh
                   </h3>
                   <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-                    Cung cấp nền tảng học lập trình chất lượng cao, dễ tiếp cận cho
-                    mọi người thông qua công nghệ hiện đại. Chúng tôi tin rằng bất kì
-                    ai cũng có thể trở thành lập trình viên giỏi nếu có phương pháp
-                    học tập đúng đắn.
+                    Cung cấp nền tảng học lập trình chất lượng cao, dễ tiếp cận
+                    cho mọi người thông qua công nghệ hiện đại. Chúng tôi tin
+                    rằng bất kì ai cũng có thể trở thành lập trình viên giỏi nếu
+                    có phương pháp học tập đúng đắn.
                   </p>
                 </div>
 
@@ -297,9 +310,9 @@ const Introduce = () => {
                     Tầm nhìn
                   </h3>
                   <p className="text-gray-600 text-sm md:text-base leading-relaxed">
-                    Trở thành hệ sinh thái đào tạo công nghệ hàng đầu ứng dụng AI tại
-                    Việt Nam, kiến tạo thế hệ nhân sự chất lượng cao cho thị trường
-                    toàn cầu.
+                    Trở thành hệ sinh thái đào tạo công nghệ hàng đầu ứng dụng
+                    AI tại Việt Nam, kiến tạo thế hệ nhân sự chất lượng cao cho
+                    thị trường toàn cầu.
                   </p>
                 </div>
               </div>
@@ -367,18 +380,24 @@ const Introduce = () => {
                   key={i}
                   className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition duration-200"
                 >
-                  <div className="h-36 bg-gradient-to-br from-brand-50 to-brand-100 flex items-center justify-center">
-                    <span className="text-4xl">{member.icon}</span>
-                  </div>
-                  <div className="p-5 text-center">
-                    <h4 className="font-semibold text-gray-900 mb-1 text-sm md:text-base break-words">
-                      {member.name}
-                    </h4>
-                    {member.role ? (
-                      <p className="text-sm text-gray-500">{member.role}</p>
-                    ) : (
-                      <p className="text-xs text-gray-400">Thành viên nhóm</p>
-                    )}
+                 
+                  <div className="bg-white overflow-hidden shadow-sm ">
+                    {/* Ảnh */}
+                    <div className="h-[240px] overflow-hidden">
+                      <img
+                        src={member.icon}
+                        alt={member.name}
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
+
+                    {/* Nội dung */}
+                    <div className="p-5 text-center h-[150px]">
+                      <h4 className="font-semibold text-gray-900 text-xl">
+                        {member.name}
+                      </h4>
+                      <p className="text-gray-400 mt-2">{member.role}</p>
+                    </div>
                   </div>
                 </div>
               ))}
