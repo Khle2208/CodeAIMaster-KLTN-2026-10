@@ -123,11 +123,11 @@ export const CourseCard = ({ course }: { course: ICourse }) => {
             {course.description}
           </p>
 
-          <div className="mb-5 flex flex-wrap items-center gap-4 text-xs font-bold text-brand-500">
+          {/* <div className="mb-5 flex flex-wrap items-center gap-4 text-xs font-bold text-brand-500">
             <span>25 bài</span>
             <span>22 giờ</span>
             <span>{course.level}</span>
-          </div>
+          </div> */}
         </div>
 
         {/* <div className="mb-6 flex items-center gap-2 text-xs font-bold text-slate-400">
@@ -147,7 +147,9 @@ export const CourseCard = ({ course }: { course: ICourse }) => {
                 course.price === 0 ? "text-brand-600" : "text-brand-600"
               }`}
             >
-              {course.price.toLocaleString("vi-VN")} Đ
+              {course.price > 0
+                ? course.price.toLocaleString("vi-VN") + "Đ"
+                : "Miễn phí"}
             </span>
           </div>
 
