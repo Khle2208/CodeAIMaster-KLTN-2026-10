@@ -151,7 +151,6 @@ export default function GithubAuthCallback() {
 
         window.location.href = "/";
       } catch (error: any) {
-        // 🚨 Hứng lỗi từ backend trả về
         // console.error("Github auth error response:", error.response?.data);
         
         // const messageFromServer = error.response?.data?.message;

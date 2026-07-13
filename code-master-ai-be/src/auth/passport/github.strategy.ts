@@ -15,7 +15,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: Profile, done: any) {
-    // Rút trích thông tin từ GitHub trả về
+    // thông tin từ GitHub trả về
     const { id, username, displayName, photos, emails } = profile;
     const user = {
       githubId: id,

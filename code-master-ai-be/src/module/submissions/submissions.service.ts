@@ -642,7 +642,7 @@ public class Main {
       );
 
       return {
-        message: 'Ch???m b??i ho??n t???t',
+        message: 'Cham bai hoan thanh',
         submission,
         passedCases,
         totalCases: testCases.length,
@@ -1261,12 +1261,12 @@ public class Main {
       courses,
     );
 
-    // 2. Dùng Regex để tìm mã ẩn [LEAD: ...]
+    // Dùng Regex để tìm mã ẩn [LEAD: ...]
     const leadRegex = /\[LEAD:\s*(.+?)\]/;
     const match = aiResponse.match(leadRegex);
 
     if (match) {
-      //  BƯỚC QUAN TRỌNG: Chuẩn hóa dữ liệu (cắt khoảng trắng và đưa về chữ thường)
+      // Chuẩn hóa dữ liệu (cắt khoảng trắng và đưa về chữ thường)
       const contactInfo = match[1].trim().toLowerCase();
 
       // Lưới lọc bảo vệ: Chống lưu chuỗi rác do AI bị "ảo giác" sinh ra

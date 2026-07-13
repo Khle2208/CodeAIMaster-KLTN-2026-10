@@ -19,6 +19,7 @@ const permissionModules = [
   { label: "Quản lý phân quyền", value: "permissions" },
   {label:"Quản lý khách hàng tiềm năng", value:"leads"},
   { label: "Quản lý học viên", value: "students" },
+  {label:"Thống kê", value:"statistics"},
 ];
 
 const actions = [
@@ -36,7 +37,9 @@ const actions = [
 
 const RoleManage: React.FC = () => {
   const [roles, setRoles] = useState<any[]>([]);
+  // id của Role đang được chọn trong dropdown
   const [selectedRoleId, setSelectedRoleId] = useState<string>("");
+  // mang quyen cua role dang chon -> dieu khien trang thai checked cua tat ca checkbox
   const [currentPermissions, setCurrentPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
@@ -56,6 +59,7 @@ const RoleManage: React.FC = () => {
       if (data && data.length > 0) {
         // Mặc định chọn Role đầu tiên
         setSelectedRoleId(data[0]._id);
+        //load quyen cua role do
         setCurrentPermissions(data[0].permissions || []);
       }
     } catch (error) {
@@ -71,10 +75,11 @@ const RoleManage: React.FC = () => {
 
   // Xử lý khi thay đổi Role đang chọn trong Dropdown
   const handleRoleChange = (roleId: string) => {
-    setSelectedRoleId(roleId);
+    setSelectedRoleId(roleId); // cap nhat role dang chon
+    // tim role tuong ung trong mang da luu san
     const role = roles.find((r) => r._id === roleId);
     if (role) {
-      setCurrentPermissions(role.permissions || []);
+      setCurrentPermissions(role.permissions || []); // load quyen role moi
     }
   };
 

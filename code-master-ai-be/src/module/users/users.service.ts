@@ -67,7 +67,6 @@ export class UsersService {
 
   // quản lý admin bên hệ thống
   async findAll(query: any, current: number, pageSize: number) {
-    // 1. Tạm thời bỏ qua aqp để test
     const limit = pageSize ? Number(pageSize) : 10;
     const offset = ((current ? Number(current) : 1) - 1) * limit;
     // Nếu không có trường deleted, hãy để là {}

@@ -44,7 +44,7 @@ export default function AdminLeads() {
   const [currentChatHistory, setCurrentChatHistory] = useState<string>('');
   const [currentContact, setCurrentContact] = useState<string>('');
 
-  // 1. SỬ DỤNG useCallback VÀ BỎ THAM SỐ MẶC ĐỊNH
+  //  SỬ DỤNG useCallback VÀ BỎ THAM SỐ MẶC ĐỊNH
   const fetchLeads = useCallback(async (page: number, limit: number, tabStatus: string) => {
     setLoading(true);
     try {
@@ -92,7 +92,7 @@ export default function AdminLeads() {
       message.error('Lỗi khi cập nhật trạng thái');
     }
   };
-
+  // Mở modal xem chat
   const showChatModal = (history: string, contact: string) => {
     setCurrentChatHistory(history);
     setCurrentContact(contact);

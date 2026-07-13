@@ -42,13 +42,13 @@ export class RolesController {
   findOne(@Param('id') id: string) {
     return this.rolesService.findOne(id);
   }
-
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('roles_edit')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.rolesService.update(id, updateRoleDto);
   }
-
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('roles_delete')
   @Delete(':id')
   remove(@Param('id') id: string) {
@@ -56,6 +56,7 @@ export class RolesController {
   }
 
   // API LƯU MA TRẬN PHÂN QUYỀN TỪ FRONTEND
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('roles_permissions')
   @Patch('permissions/bulk-update') 
   async updatePermissions(@Body() body: { roles: { id: string; permissions: string[] }[] }) {

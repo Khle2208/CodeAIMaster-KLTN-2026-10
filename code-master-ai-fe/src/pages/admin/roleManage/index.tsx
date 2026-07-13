@@ -51,7 +51,7 @@ const RoleManage: React.FC = () => {
         search: activeSearch,
       });
 
-      // Xử lý dữ liệu trả về theo format { results, meta }
+      // Xử lý dữ liệu trả về theo format 
       if (data && data.results) {
         setRoles(data.results);
         setTotalPages(data.meta?.pages || 1);

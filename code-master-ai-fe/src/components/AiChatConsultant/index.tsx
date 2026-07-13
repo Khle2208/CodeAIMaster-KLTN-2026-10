@@ -19,8 +19,8 @@ const formatAiMessage = (text: string) => {
     .replace(
       /\*\*(.*?)\*\*/g,
       '<strong class="font-extrabold text-[#2c4430]">$1</strong>',
-    )
-    .replace(/\*(.*?)\*/g, '<em class="italic text-gray-700">$1</em>')
+    ) // in dam
+    .replace(/\*(.*?)\*/g, '<em class="italic text-gray-700">$1</em>') // in nghieng
     .replace(
       /^- (.*)/gm,
       '<div class="mb-1 flex items-start gap-2"><span class="mt-0.5 text-[#3a5a40]">•</span><span>$1</span></div>',
@@ -41,6 +41,7 @@ export default function FloatingAiChat() {
   ]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  // tham chieu den div chau tin nhan
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

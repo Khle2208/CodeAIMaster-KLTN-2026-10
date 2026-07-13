@@ -107,7 +107,7 @@ export class AiAssistantService {
         role: msg.role,
         parts: [{ text: msg.text }]
        }));
-
+       
        const chat = model.startChat({
         history: formattedHistory
        });

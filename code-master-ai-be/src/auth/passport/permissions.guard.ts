@@ -11,22 +11,17 @@ export class PermissionsGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-
     if (!requiredPermissions) { return true; } // API không đòi quyền -> Cho qua
-
     const { user } = context.switchToHttp().getRequest();
-
     if (!user || !user.permissions) {
       throw new ForbiddenException('Vui lòng đăng nhập!');
     }
-
     // Kiểm tra xem User có quyền mà API yêu cầu không
     const hasPermission = requiredPermissions.some((perm) => user.permissions.includes(perm));
 
     if (!hasPermission) {
       throw new ForbiddenException('Bạn không có quyền thực hiện chức năng này!');
     }
-
     return true;
   }
 }
